@@ -111,14 +111,14 @@ footer > * {
   list-style-type: none;
 }
 
-#feed {
+/* #feed {
   min-width: 500px;
   max-width: 800px;
   width: 80%;
   margin: 20px auto;
   padding: 0;
 }
-
+ */
 .feed-header {
   display: flex;
   justify-content: space-between;
@@ -130,3 +130,130 @@ footer > * {
 }
 
 /* Add your styles here */
+html, body {
+  font-family: "Helvetica", serif; 
+}
+
+footer {
+  position:fixed;
+  bottom:0;
+}
+
+#feed {
+  min-width: 500px;
+  max-width: 800px;
+  width: 95%;
+  margin: 10px auto;
+  padding: 0;
+}
+
+.leftpanel {
+  width: 75%;
+}
+
+.rightpanel {
+  width: 25%;
+}
+
+.logo {
+  cursor: pointer;
+}
+
+.form {
+  margin: 12px;
+}
+
+.credentials-form {
+  display: inline;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 6px 20px;
+}
+
+.submit-button {
+  border: 1px solid;
+  border-color: #FF5700;
+  border-radius: 4px;
+  text-transform: uppercase;
+  padding: 7.5px 18px;
+  font-weight: bold;
+  background-color: #FF5700;
+  color: #eee8e8;
+  margin-top: 12px;
+}
+
+.submit-button:active {
+  background-color: #DD3500;
+  color: #ffffff;
+}
+
+.loggedinas {
+  background-color: var(--reddit-bg-color);
+  font: inherit;
+  font-size: var(--body-text-size);
+  border: none;
+  padding: 7.5px 15px;
+  outline: none;
+  border: 1px solid var(--reddit-grey);
+  border-radius: 4px;
+}
+
+.post-list {
+  list-style-type: none;
+}
+
+.post-left {
+  background-color: #aaffcc;
+  grid-area: p-left;
+}
+
+.post-middle {
+  grid-area: p-middle;
+}
+
+.post-right {
+  display: grid;
+  grid-template-rows: 40px auto auto;
+  grid-template-areas: 'pr-upper' 'pr-middle' 'pr-bottom';
+}
+
+.post-wrapper {
+  border-radius: 5px;
+  margin: 4px;
+  left: 4px;
+  padding: 0 1px;
+  display: grid;
+  grid-template-columns: 25px 100px auto;
+  grid-template-areas: 'p-left p-middle pr-upper' 'p-left p-middle pr-middle' 'p-left p-middle pr-bottom';
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid var(--reddit-grey);
+}
+
+
+.post-rightchild-upper {
+  grid-area: pr-upper;
+  font-weight: bold;
+}
+
+.post-rightchild-middle {
+  grid-area: pr-middle;
+  min-height: 25px;
+  max-height: 50px;
+}
+
+.post-rightchild-bottom {
+  grid-area: pr-bottom;
+}
+
+.post-upvote {
+
+}
+
+.post-votes {
+
+}
+
+.post-expandbutton {
+
+}

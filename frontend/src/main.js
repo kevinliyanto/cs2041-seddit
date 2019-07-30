@@ -5,12 +5,23 @@
  */
 
 // import your own scripts here.
+import { initRoute } from './router/route.js';
+import defaultPage from './components/default.js';
+import homePage from './components/home.js';
+
 
 // your app must take an apiUrl as an argument --
 // this will allow us to verify your apps behaviour with 
 // different datasets.
 function initApp(apiUrl) {
-  // your app initialisation goes here
+    // your app initialisation goes here   
+
+    // generate default page
+    initRoute(apiUrl);
+    defaultPage();
+
+    homePage(apiUrl);
+
 }
 
 export default initApp;
