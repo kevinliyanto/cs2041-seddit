@@ -1,6 +1,7 @@
 import setNavbar from './sub/navbar.js';
 import { postSignup } from './requester/request_auth.js';
 import { storeSession } from './storage/setlocalstorage.js';
+import { routeHome } from '../router/route.js';
 
 let formInput = (type, name, placeholder) => {
     let form = document.createElement("input");
@@ -118,7 +119,7 @@ let setSignup = (apiUrl) => {
                 .then(res => console.log(res))
                 .then((token) => {
                     storeSession(userForm.value, token);
-                    homePage(apiUrl);
+                    routeHome(apiUrl);
                 })
                 .catch((err) => {
                     let no = 'Error ' + err.status + ': ';
