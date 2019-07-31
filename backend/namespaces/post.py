@@ -23,11 +23,11 @@ class Global(Resource):
     @posts.response(200, 'Success', post_list_details)
     @posts.doc(description='''Allows a non-auth'd user to fetch the latest 20 posts by all users.''')
     def get(self):
-        q = 'SELECT * FROM POSTS p ORDER BY p.published LIMIT 20'
+        q = 'SELECT * FROM POSTS p ORDER BY p.published DESC LIMIT 20'
 
         latest_posts = db.raw(q, [])
         latest_posts = [format_post(row) for row in latest_posts]
-        latest_posts.sort(reverse=True,key=lambda x: int(x["meta"]["published"]))
+        latest_posts.sort(reverse=True,key=lambda x: int(float(x["meta"]["published"])))
 
         return {
             'posts': latest_posts
@@ -131,7 +131,7 @@ class Post(Resource):
             updated['src'] = src
             updated['thumbnail'] = shrink(src)
         if title:
-            updated['title'] = src
+            updated['title'] = title
         db.update('POST').set(**updated).where(id=id).execute()
         return {
             'message': 'success'

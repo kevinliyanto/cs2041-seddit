@@ -75,7 +75,7 @@ class Dummy_Post(Resource):
             # exposing what post id's are valid and unvalid
             # may be a security issue lol
             abort(403, 'You Are Unauthorized To Edit That Post')
-        (desc,src) = unpack(j,'description_text','src',required=False)
+        (title,desc,src) = unpack(j,'title','description_text','src',required=False)
         if desc == None and src == None:
             abort(400, 'Malformed Request')
         updated = {}
@@ -83,6 +83,8 @@ class Dummy_Post(Resource):
             updated['description'] = desc
         if src:
             updated['src'] = src
+        if title:
+            updated['title'] = title
         db.update('POST').set(**updated).where(id=id).execute()
         return {
             'message': 'success'
@@ -298,7 +300,7 @@ class Feed(Resource):
         following.append(p)
         all_posts = db.raw(q,following)
         all_posts = [format_post(row) for row in all_posts]
-        all_posts.sort(reverse=True,key=lambda x: int(x["meta"]["published"]))
+        all_posts.sort(reverse=True,key=lambda x: int(float(x["meta"]["published"])))
         return {
             'posts': all_posts
         }
