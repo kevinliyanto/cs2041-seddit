@@ -4,3 +4,5 @@
 28/07/19    22:52   06:18   finishing milestone 0 and 1 with the routing. there are still some modification needed for the css to make the page looks amazing. user can now login with token stored. invalid auth gets ignored and needs to be fixed later. meanwhile, i am going to focus on my 2511 assignment which is due next sundah.
 30/07/19    20:55   21:30   got bored of java and got some energy to rework on the throw-catch on failed authentication (login/signup). worked on it and seems that my code works as what i wanted: showing response status and the following message on failed auth process. i will commit this version to remote so that i can work on this assignment in case i want it (most likely will happen, this stuff is fun ngl)
 31/07/19    22:55   23:03   updating login and signup so that the hash updates. previously, the hash did not update (since the login only calls homePage function)
+04/07/19    20:08   20:51   get a working thumbnail for public posts
+04/07/19    22:21   00:46   setting up template for user page. will continue later

@@ -1,5 +1,6 @@
 import setNavbar from './sub/navbar.js';
-import { getPublicPost } from './requester/request_post.js';
+import { getPublicPost, getPrivatePost } from './requester/request_post.js';
+import { checkLogged } from './storage/setlocalstorage.js';
 
 let enlargePost = (post) => {
 
@@ -7,15 +8,22 @@ let enlargePost = (post) => {
 
 let convertToNow = (timestamp) => {
     let t = new Date(timestamp * 1000);
-    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let months = ['January','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     let y = t.getFullYear();
     let m = months[t.getMonth()];
     let d = t.getDate();
-    let h = t.getHours();
-    let min = t.getMinutes();
+    let h = formatTime(t.getHours());
+    let min = formatTime(t.getMinutes());
 
-    let result = m + ' ' + y + ', ' + d + ' (' + h + ':' + min + ')';
+    let result = d + ' ' + m + ' ' + y +  ' (' + h + ':' + min + ')';
     return result;
+}
+
+let formatTime = (t) => {
+    if (t < 10) {
+        t = "0" + t;
+    }
+    return t;
 }
 
 let setSmallPost = (data) => {
@@ -24,13 +32,6 @@ let setSmallPost = (data) => {
     list.setAttribute("data-id-post", data.id);
     list.className = "post-list";
     
-    // Show upvote on leftmost div
-    // Show media type on next div
-    // Next div:
-    // Show title
-    // by user on subseddit /s/?
-    // comments onaction link
-
     let wrapper = document.createElement("div");
     wrapper.className = "post-wrapper";
 
@@ -59,18 +60,26 @@ let setSmallPost = (data) => {
 
     // Setting up middle side
     // Ignore for now, thumbnail not provided
+    if (data.image != null){
+        let originalImage = document.createElement("img");
+        originalImage.setAttribute('src', "data:image/png;base64," + data.image);
+    
+        originalImage.setAttribute("height", 100);
+        originalImage.setAttribute("width", 100);
+    
+        midCol.appendChild(originalImage);
+    }
 
     // Setting up right side
-    upperSide.innerText = data.title + '...';
+    upperSide.innerText = data.text;
 
-    middleSide.innerText = `Posted by ` + data.meta.author + ` on ` + data.meta.subseddit + `. Published on ` + convertToNow(data.meta.published);
+    middleSide.innerText = `Posted by ` + data.meta.author + ` on /s/` + data.meta.subseddit + `. Published on ` + convertToNow(data.meta.published);
 
     let expandButton = document.createElement("button");
     expandButton.className = "post-expandbutton";
+    expandButton.innerText = ">";
     bottomSide.appendChild(expandButton);
     
-
-
     list.appendChild(wrapper);
     wrapper.appendChild(leftCol);
     wrapper.appendChild(midCol);
@@ -126,7 +135,14 @@ let setMainHome = (apiUrl) => {
 
     // Check if user authed, if authed then generate user post
     // else generate public post
-    getPublicPost(apiUrl).then(file => generatePosts(file));
+    if (checkLogged()){
+        getPrivatePost(apiUrl, 0, 10).then((file) => {
+            console.log(file);
+            generatePosts(file);
+        });
+    } else {
+        getPublicPost(apiUrl).then(file => generatePosts(file));
+    }
 
 }
 

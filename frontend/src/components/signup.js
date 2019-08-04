@@ -116,9 +116,8 @@ let setSignup = (apiUrl) => {
         if (validInput){
             // Sign up
             postSignup(apiUrl, userForm.value, passForm.value, email.value, name.value)
-                .then(res => console.log(res))
-                .then((token) => {
-                    storeSession(userForm.value, token);
+                .then((res) => {
+                    storeSession(userForm.value, res.token);
                     routeHome(apiUrl);
                 })
                 .catch((err) => {

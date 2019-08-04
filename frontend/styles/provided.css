@@ -213,7 +213,8 @@ footer {
 
 .post-right {
   display: grid;
-  grid-template-rows: 40px auto auto;
+  grid-area: p-right;
+  grid-template-rows: auto auto auto;
   grid-template-areas: 'pr-upper' 'pr-middle' 'pr-bottom';
 }
 
@@ -224,7 +225,7 @@ footer {
   padding: 0 1px;
   display: grid;
   grid-template-columns: 25px 100px auto;
-  grid-template-areas: 'p-left p-middle pr-upper' 'p-left p-middle pr-middle' 'p-left p-middle pr-bottom';
+  grid-template-areas: 'p-left p-middle p-right' 'p-left p-middle p-right' 'p-left p-middle p-right';
   overflow: hidden;
   background-color: white;
   border: 1px solid var(--reddit-grey);
@@ -234,12 +235,13 @@ footer {
 .post-rightchild-upper {
   grid-area: pr-upper;
   font-weight: bold;
+  padding-bottom: 5px;
+  min-height: 
 }
 
 .post-rightchild-middle {
   grid-area: pr-middle;
-  min-height: 25px;
-  max-height: 50px;
+  padding-bottom: 5px;
 }
 
 .post-rightchild-bottom {
@@ -256,4 +258,22 @@ footer {
 
 .post-expandbutton {
 
+}
+
+.user-layout {
+  grid-template-rows: 50px 20px 20px 50px 50px;
+  grid-template-areas: 'user-uname user-uname' 'user-longdetail user-longdetail' 'user-longdetail user-longdetail' 'user-numeric user-numeric' 'user-numeric .'
+}
+
+.user-uname {
+  text-emphasis: bold;
+  text-size-adjust: 18px
+}
+
+.user-longdetail {
+
+}
+
+.user-numeric {
+  
 }

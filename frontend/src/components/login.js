@@ -73,9 +73,8 @@ let setLogin = (apiUrl) => {
         if (validInput){
             // Login
             postLogin(apiUrl, userForm.value, passForm.value)
-                .then(res => console.log(res))
-                .then((token) => {
-                    storeSession(userForm.value, token);
+                .then((res) => {
+                    storeSession(userForm.value, res.token);
                     routeHome(apiUrl);
                 })
                 .catch((err) => {

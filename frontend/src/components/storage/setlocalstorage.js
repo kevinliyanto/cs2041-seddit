@@ -7,6 +7,18 @@ let getUsername = () => {
     return localStorage.getItem('username');
 }
 
+let getToken = () => {
+    return localStorage.getItem('token');
+}
+
+let setLastPage = (url) => {
+    localStorage.setItem('last', url);
+}
+
+let getLastPage = () => {
+    return localStorage.getItem('last');
+}
+
 let clearSession = () => {
     localStorage.clear();
 }
@@ -29,6 +41,7 @@ let getUserLocale = () => {
 export {
     storeSession,
     getUsername,
+    getToken,
     clearSession,
     checkLogged,
     updateUserLocale,
