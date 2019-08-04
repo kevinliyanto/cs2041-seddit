@@ -34,7 +34,33 @@ async function getPrivatePost(apiUrl, p, n) {
 
     let data = await fetch(apiUrl + "/user/feed?p=" + p + "&n=" + n, settings)
         .then(response => {
-            console.log(response);
+            return response.json();
+        })
+        .then(json => {
+            return json;
+        })
+        .catch(e => {
+            return e;
+        });
+
+    return data;
+}
+
+async function getPost(apiUrl, id) {
+    if (apiUrl == null) return null;
+
+    let token = getToken();
+
+    let settings = {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': "Token " + token
+        }
+    };
+
+    let data = await fetch(apiUrl + "/post/?id=" + id, settings)
+        .then(response => {
             return response.json();
         })
         .then(json => {
@@ -49,5 +75,6 @@ async function getPrivatePost(apiUrl, p, n) {
 
 export {
     getPublicPost,
-    getPrivatePost
+    getPrivatePost,
+    getPost
 };

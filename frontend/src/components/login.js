@@ -1,6 +1,6 @@
 import setNavbar from './sub/navbar.js';
 import { postLogin } from './requester/request_auth.js';
-import { storeSession } from './storage/setlocalstorage.js';
+import { storeSession, setLastPage } from './storage/setlocalstorage.js';
 import { routeHome } from '../router/route.js';
 
 
@@ -95,12 +95,7 @@ let setLogin = (apiUrl) => {
 
 
 let loginPage = (apiUrl) => {
-    // console.log("loginpage");
-
-    // Check if authed
-    // If authed, go back to home page
-    // If not authed, generate navbar and set up the main
-
+    setLastPage("#login");
     setNavbar(apiUrl);
     setLogin(apiUrl);
 }

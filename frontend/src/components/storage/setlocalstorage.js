@@ -16,7 +16,9 @@ let setLastPage = (url) => {
 }
 
 let getLastPage = () => {
-    return localStorage.getItem('last');
+    let last = localStorage.getItem('last');
+    if (last == null) last = "#home";
+    return last;
 }
 
 let clearSession = () => {
@@ -42,6 +44,8 @@ export {
     storeSession,
     getUsername,
     getToken,
+    setLastPage,
+    getLastPage,
     clearSession,
     checkLogged,
     updateUserLocale,

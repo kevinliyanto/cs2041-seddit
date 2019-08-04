@@ -5,9 +5,9 @@
  */
 
 // import your own scripts here.
-import { initRoute } from './router/route.js';
+import { initRoute, routeRegister, firstRoute } from './router/route.js';
 import defaultPage from './components/default.js';
-import homePage from './components/home.js';
+import { getLastPage } from './components/storage/setlocalstorage.js';
 
 
 // your app must take an apiUrl as an argument --
@@ -20,8 +20,7 @@ function initApp(apiUrl) {
     initRoute(apiUrl);
     defaultPage();
 
-    homePage(apiUrl);
-
+    firstRoute(apiUrl);
 }
 
 export default initApp;

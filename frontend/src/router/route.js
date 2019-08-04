@@ -58,13 +58,16 @@ let routes = (event, apiUrl) => {
 
 }
 
+let firstRoute = (apiUrl) => {
+    routes(null, apiUrl);
+}
+
 let checkHashUser = (hash) => {
     let re = /^#u\/.+/;
     return re.test(hash);
 }
 
 let initRoute = (apiUrl) => {
-
     window.addEventListener("hashchange", (event) => {
         routes(event, apiUrl);
     });
@@ -74,5 +77,6 @@ export {
     routeHome,
     routeRegister,
     routeLogin,
+    firstRoute,
     initRoute
 };

@@ -6,9 +6,9 @@ let setHeader = () => {
 }
 
 let setMain = () => {
-    let main = document.createElement("main");
+    let main = document.createElement("div");
     main.id = "main";
-    main.setAttribute("role", "main");
+    main.className = "main";
     return main;
 }
 
@@ -28,7 +28,6 @@ let defaultPage = () => {
     let footer = document.getElementById("footer");
     if (footer != null) footer.remove();
 
-    console.log("testing");
     header = setHeader();
     main = setMain();
     footer = setFooter();

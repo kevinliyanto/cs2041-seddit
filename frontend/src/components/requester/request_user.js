@@ -16,7 +16,6 @@ async function getUser(apiUrl, username) {
     let data = await fetch(apiUrl + "/user/?username=" + username, settings)
         .then(handleError)
         .then(response => {
-            // console.log(response);
             return response.json();
         })
         .then(json => {
@@ -24,7 +23,7 @@ async function getUser(apiUrl, username) {
             return json;
         })
         .catch(e => {
-            return e;
+            return null;
         });
 
     return data;

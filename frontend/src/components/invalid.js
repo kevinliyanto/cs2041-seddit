@@ -1,4 +1,5 @@
 import setNavbar from "./sub/navbar.js";
+import { setLastPage } from "./storage/setlocalstorage.js";
 
 let setInvalidPage = (apiUrl) => {
     let main = document.getElementById("main");
@@ -17,6 +18,7 @@ let setInvalidPage = (apiUrl) => {
 
 
 let invalidPage = (apiUrl) => {
+    setLastPage("#home");
     setNavbar(apiUrl);
     setInvalidPage(apiUrl);
 }

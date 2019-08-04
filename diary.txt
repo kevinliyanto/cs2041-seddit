@@ -6,3 +6,4 @@
 31/07/19    22:55   23:03   updating login and signup so that the hash updates. previously, the hash did not update (since the login only calls homePage function)
 04/07/19    20:08   20:51   get a working thumbnail for public posts
 04/07/19    22:21   00:46   setting up template for user page. will continue later
+05/07/19    01:29   02:43   after eating my midnight ramen, i decided to implement the idea that came out after answering piazza forum on page refresh behaviour (thanks anon user). the implementation is a bit buggy in the beginning, but managed to make it work without any problem. besides that, i also made some css for the user details on user page (#u/username). not bad. i feel really effective

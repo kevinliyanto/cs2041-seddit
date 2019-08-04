@@ -1,6 +1,6 @@
 import setNavbar from './sub/navbar.js';
 import { postSignup } from './requester/request_auth.js';
-import { storeSession } from './storage/setlocalstorage.js';
+import { storeSession, setLastPage } from './storage/setlocalstorage.js';
 import { routeHome } from '../router/route.js';
 
 let formInput = (type, name, placeholder) => {
@@ -139,7 +139,7 @@ let setSignup = (apiUrl) => {
 
 
 let signupPage = (apiUrl) => {
-    // console.log("loginpage");
+    setLastPage("#signup");
     setNavbar(apiUrl);
     setSignup(apiUrl);
 }

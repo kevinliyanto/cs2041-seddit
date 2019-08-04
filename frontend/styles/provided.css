@@ -140,19 +140,27 @@ footer {
 }
 
 #feed {
-  min-width: 500px;
-  max-width: 800px;
+  min-width: 350px;
+  max-width: 1250px;
   width: 95%;
   margin: 10px auto;
   padding: 0;
 }
 
+.main {
+  display: grid;
+  grid-template-columns: 72% 2% 26%;
+  grid-template-areas: 'left . right'
+}
+
 .leftpanel {
-  width: 75%;
+  grid-area: left
 }
 
 .rightpanel {
-  width: 25%;
+  padding-block: 5px;
+  padding-top: 10px;
+  grid-area: right
 }
 
 .logo {
@@ -200,6 +208,8 @@ footer {
 
 .post-list {
   list-style-type: none;
+  margin-top: 10px;
+  margin-bottom: 10px
 }
 
 .post-left {
@@ -219,7 +229,7 @@ footer {
 }
 
 .post-wrapper {
-  border-radius: 5px;
+  border-radius: 7px;
   margin: 4px;
   left: 4px;
   padding: 0 1px;
@@ -228,7 +238,7 @@ footer {
   grid-template-areas: 'p-left p-middle p-right' 'p-left p-middle p-right' 'p-left p-middle p-right';
   overflow: hidden;
   background-color: white;
-  border: 1px solid var(--reddit-grey);
+  border: 2px solid var(--reddit-grey);
 }
 
 
@@ -262,18 +272,47 @@ footer {
 
 .user-layout {
   grid-template-rows: 50px 20px 20px 50px 50px;
-  grid-template-areas: 'user-uname user-uname' 'user-longdetail user-longdetail' 'user-longdetail user-longdetail' 'user-numeric user-numeric' 'user-numeric .'
+  grid-template-columns: 50% 50%;
+  margin-right: 15px;
+  grid-template-areas: 'user-uname' 'user-longdetail' 'user-longdetail' 'user-largenum' 'user-numeric .';
+  border: 2px solid var(--reddit-grey)
 }
 
 .user-uname {
-  text-emphasis: bold;
-  text-size-adjust: 18px
+  grid-area: user-uname;
+  font-weight: bold;
+  font-size: 30px;
+  padding: 5px
 }
 
 .user-longdetail {
+  grid-area: user-longdetail;
+  padding: 5px
+}
 
+.user-largenum {
+  grid-area: user-largenum;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas: 'user-numeric user-numeric'
 }
 
 .user-numeric {
-  
+  grid-area: user-numeric;
+  padding: 5px;
+  padding-right: 10px;
+  display: grid;
+  grid-template-rows: 20px 30px;
+  grid-template-areas: 'user-numeric-top' 'user-numeric-bottom'
+}
+
+.user-numeric-top {
+  grid-area: user-numeric-top;
+  font-size: 16px
+}
+
+.user-numeric-bottom {
+  grid-area: user-numeric-bottom;
+  font-size: 18px;
+  font-weight: bold
 }
