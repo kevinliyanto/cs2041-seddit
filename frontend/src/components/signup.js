@@ -1,7 +1,15 @@
 import setNavbar from './sub/navbar.js';
-import { postSignup } from './requester/request_auth.js';
-import { storeSession, setLastPage } from './storage/setlocalstorage.js';
-import { routeHome } from '../router/route.js';
+import {
+    postSignup
+} from './requester/request_auth.js';
+import {
+    storeSession,
+    setLastPage
+} from './storage/setlocalstorage.js';
+import {
+    routeHome
+} from '../router/route.js';
+import { errorModal } from './sub/modal.js';
 
 let formInput = (type, name, placeholder) => {
     let form = document.createElement("input");
@@ -34,23 +42,23 @@ let checkInput = () => {
     }
 
     let uname = document.getElementsByName("username");
-    if (uname[0].value.length == 0){
+    if (uname[0].value.length == 0) {
         message += "Invalid username length\n";
         valid = false;
     }
 
     let passw = document.getElementsByName("password");
-    if (passw[0].value.length == 0){
+    if (passw[0].value.length == 0) {
         message += "Invalid password length\n";
         valid = false;
     }
-    if (passw[0].value !== passw[1].value){
+    if (passw[0].value !== passw[1].value) {
         message += "Password did not match up\n";
         valid = false;
     }
 
     let namec = document.getElementsByName("name");
-    if (namec[0].value.length == 0){
+    if (namec[0].value.length == 0) {
         message += "Invalid name length\n";
         valid = false;
     }
@@ -62,8 +70,7 @@ let checkInput = () => {
 }
 
 let showModal = (message) => {
-    console.log(message);
-    
+    errorModal(message);
 }
 
 let setSignup = (apiUrl) => {
@@ -109,34 +116,79 @@ let setSignup = (apiUrl) => {
     signupSection.appendChild(name);
     signupSection.appendChild(document.createElement("br"));
 
+    userForm.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
+    passForm.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
+    passForm2.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
+    email.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
+    name.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
     // Create button
     let signup = submitButton();
     signup.onclick = () => {
-        let validInput = checkInput();
-        if (validInput){
-            // Sign up
-            postSignup(apiUrl, userForm.value, passForm.value, email.value, name.value)
-                .then((res) => {
-                    storeSession(userForm.value, res.token);
-                    routeHome(apiUrl);
-                })
-                .catch((err) => {
-                    let no = 'Error ' + err.status + ': ';
-                    console.log(err);
-                    alert(no + err.statusText);
-                });
-        }
-    }
+        submit(apiUrl);
+    };
     signupSection.appendChild(signup);
 
 
     let main = document.getElementById("main");
-    while (main.firstChild){
+    while (main.firstChild) {
         main.firstChild.remove();
     }
     main.appendChild(signupSection);
 }
 
+let submit = (apiUrl) => {
+    let validInput = checkInput();
+
+    let uname = document.getElementsByName("username");
+    let passw = document.getElementsByName("password");
+    let email = document.getElementsByName("email");
+    let namec = document.getElementsByName("name");
+    if (validInput) {
+        // Sign up
+        postSignup(apiUrl, uname[0].value, passw[0].value, email[0].value, namec[0].value)
+            .then((res) => {
+                storeSession(userForm.value, res.token);
+                setUserRequest(apiUrl);
+                routeHome(apiUrl);
+            })
+            .catch((err) => {
+                let no = 'Error ' + err.status + ': ';
+                console.log(err);
+                // alert(no + err.statusText);
+                showModal(no + err.statusText);
+            });
+    }
+}
 
 let signupPage = (apiUrl) => {
     setLastPage("#signup");

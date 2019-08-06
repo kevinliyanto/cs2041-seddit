@@ -1,7 +1,9 @@
 import setNavbar from './sub/navbar.js';
 import { postLogin } from './requester/request_auth.js';
-import { storeSession, setLastPage } from './storage/setlocalstorage.js';
+import { storeSession, setLastPage, setUserID } from './storage/setlocalstorage.js';
 import { routeHome } from '../router/route.js';
+import { setUserRequest } from './requester/request_user.js';
+import { errorModal } from './sub/modal.js';
 
 
 let formInput = (type, name, placeholder) => {
@@ -25,7 +27,7 @@ let submitButton = () => {
 let checkInput = () => {
     let uname = document.getElementsByName("username");
     let passw = document.getElementsByName("password");
-    if (uname[0].value.length == 0 && passw[0].value.length == 0){
+    if (uname[0].value.length == 0 || passw[0].value.length == 0){
         showModal("Invalid input");
         return false;
     }
@@ -33,15 +35,7 @@ let checkInput = () => {
 }
 
 let showModal = (message) => {
-    console.log("show modal: " + message);
-    // Check how many modals are there
-    let existing = document.getElementsByClassName("modal");
-    let id = existing.length;
-
-    let modal = document.createElement("div");
-    modal.className = "modal";
-    modal.id = id;
-    
+    errorModal(message);
 }
 
 let setLogin = (apiUrl) => {
@@ -69,21 +63,23 @@ let setLogin = (apiUrl) => {
     // Create button
     let login = submitButton();
     login.onclick = () => {
-        let validInput = checkInput();
-        if (validInput){
-            // Login
-            postLogin(apiUrl, userForm.value, passForm.value)
-                .then((res) => {
-                    storeSession(userForm.value, res.token);
-                    routeHome(apiUrl);
-                })
-                .catch((err) => {
-                    let no = 'Error ' + err.status + ': ';
-                    console.log(err);
-                    alert(no + err.statusText);
-                });
+        submit(apiUrl);
+    };
+
+    userForm.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
         }
-    }
+    });
+
+    passForm.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13){
+            submit(apiUrl);
+        }
+    });
+
     loginSection.appendChild(login);
 
     let main = document.getElementById("main");
@@ -93,6 +89,29 @@ let setLogin = (apiUrl) => {
     main.appendChild(loginSection);
 }
 
+let submit = (apiUrl) => {
+    let validInput = checkInput();
+
+    if (validInput){
+        // Login
+        let uname = document.getElementsByName("username");
+        let username = uname[0].value;
+        let passw = document.getElementsByName("password");
+        let password = passw[0].value;
+        postLogin(apiUrl, username, password)
+            .then((res) => {
+                storeSession(username, res.token);
+                setUserRequest(apiUrl);
+                routeHome(apiUrl);
+            })
+            .catch((err) => {
+                let no = 'Error ' + err.status + ': ';
+                console.log(err);
+                //alert(no + err.statusText);
+                showModal(no + err.statusText);
+            });
+    }
+}
 
 let loginPage = (apiUrl) => {
     setLastPage("#login");

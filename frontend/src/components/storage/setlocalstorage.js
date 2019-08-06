@@ -3,6 +3,14 @@ let storeSession = (username, token) => {
     localStorage.setItem('token', token);
 }
 
+let setUserID = (userID) => {
+    localStorage.setItem('userID', userID);
+}
+
+let getUserID = () => {
+    return localStorage.getItem('userID');
+}
+
 let getUsername = () => {
     return localStorage.getItem('username');
 }
@@ -42,6 +50,8 @@ let getUserLocale = () => {
 
 export {
     storeSession,
+    setUserID,
+    getUserID,
     getUsername,
     getToken,
     setLastPage,

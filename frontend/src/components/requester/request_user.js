@@ -1,4 +1,4 @@
-import { getToken } from "../storage/setlocalstorage.js";
+import { getToken, getUsername, setUserID } from "../storage/setlocalstorage.js";
 
 async function getUser(apiUrl, username) {
     if (apiUrl == null) return null;
@@ -29,6 +29,13 @@ async function getUser(apiUrl, username) {
     return data;
 }
 
+async function setUserRequest(apiUrl) {
+    getUser(apiUrl, getUsername())
+        .then((res) => {
+            setUserID(res.id);
+        });
+}
+
 function handleError(res) {
     if (!res.ok) {
         throw res;
@@ -36,6 +43,8 @@ function handleError(res) {
     return res;
 }
 
+
 export {
-    getUser
+    getUser,
+    setUserRequest
 };

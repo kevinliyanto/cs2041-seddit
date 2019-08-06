@@ -8,6 +8,7 @@
 import { initRoute, routeRegister, firstRoute } from './router/route.js';
 import defaultPage from './components/default.js';
 import { getLastPage } from './components/storage/setlocalstorage.js';
+import { errorModal } from './components/sub/modal.js';
 
 
 // your app must take an apiUrl as an argument --
@@ -21,6 +22,8 @@ function initApp(apiUrl) {
     defaultPage();
 
     firstRoute(apiUrl);
+
+    errorModal("This is from main.js\nPlease remove when you're done.");
 }
 
 export default initApp;

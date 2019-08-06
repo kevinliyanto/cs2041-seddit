@@ -12,7 +12,7 @@ let setFeed = () => {
 }
 
 let setRightPanel = (res) => {
-    console.log(res);
+    // console.log(res);
     let mainuser = document.createElement("div");
     mainuser.id = "mainuser";
     mainuser.className = "user-layout";

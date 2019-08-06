@@ -22,6 +22,13 @@ let enlargePost = (post) => {
 
 }
 
+let upvoteButton = () => {
+    let upvote = document.createElement("button");
+    upvote.className = "small-button post-upvote";
+    upvote.innerText = "Λ";
+    return upvote;
+}
+
 let setSmallPost = (data) => {
 
     let list = document.createElement("li");
@@ -46,8 +53,8 @@ let setSmallPost = (data) => {
     bottomSide.className = "post-rightchild-bottom";
 
     // Setting up left side
-    let upvote = document.createElement("div");
-    upvote.className = "post-upvote";
+    let upvote = upvoteButton();
+
     let votecount = document.createElement("div");
     votecount.className = "post-votes";
     votecount.innerText = data.meta.upvotes.length;
@@ -72,7 +79,7 @@ let setSmallPost = (data) => {
     middleSide.innerText = `Posted by ` + data.meta.author + ` on /s/` + data.meta.subseddit + `. Published on ` + convertToNow(data.meta.published);
 
     let expandButton = document.createElement("button");
-    expandButton.className = "post-expandbutton";
+    expandButton.className = "small-button post-expandbutton";
     expandButton.innerText = ">";
     bottomSide.appendChild(expandButton);
     
