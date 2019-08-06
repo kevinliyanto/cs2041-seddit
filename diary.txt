@@ -7,3 +7,4 @@
 04/07/19    20:08   20:51   get a working thumbnail for public posts
 04/07/19    22:21   00:46   setting up template for user page. will continue later
 05/07/19    01:29   02:43   after eating my midnight ramen, i decided to implement the idea that came out after answering piazza forum on page refresh behaviour (thanks anon user). the implementation is a bit buggy in the beginning, but managed to make it work without any problem. besides that, i also made some css for the user details on user page (#u/username). not bad. i feel really effective
+06/07/19    13:31   13:43   modified username ("Logged in as user x") to use two <a> instead of innerHTML, and then adjust the class for the username's <a> to have pointer cursor and bold, which routes the page to the user page on click

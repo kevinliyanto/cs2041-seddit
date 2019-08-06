@@ -77,6 +77,7 @@ export {
     routeHome,
     routeRegister,
     routeLogin,
+    routeUser,
     firstRoute,
     initRoute
 };

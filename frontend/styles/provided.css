@@ -167,6 +167,11 @@ footer {
   cursor: pointer;
 }
 
+.logged-username {
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .form {
   margin: 12px;
 }
@@ -246,7 +251,7 @@ footer {
   grid-area: pr-upper;
   font-weight: bold;
   padding-bottom: 5px;
-  min-height: 
+  min-height: 20px;
 }
 
 .post-rightchild-middle {

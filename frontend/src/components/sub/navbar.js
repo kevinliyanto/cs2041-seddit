@@ -1,7 +1,8 @@
 import {
     routeLogin,
     routeRegister,
-    routeHome
+    routeHome,
+    routeUser
 } from "../../router/route.js";
 import {
     checkLogged, getUsername, clearSession
@@ -109,8 +110,19 @@ let generateNavlistPrivate = (apiUrl) => {
     let list_2 = document.createElement("li");
     list_2.className = "nav-item";
 
+    let a1 = document.createElement("a");
+    a1.innerText = "Logged in as user ";
 
-    list_1.innerHTML = "Logged in as user <b>" + getUsername() + "</b>";
+    let a2 = document.createElement("a");
+    a2.innerText = getUsername();
+    a2.className = "logged-username";
+
+    a2.onclick = () => {
+        routeUser(apiUrl, a2.innerText);
+    }
+
+    list_1.appendChild(a1);
+    list_1.appendChild(a2);
 
     let logout = logoutButton();
     logout.onclick = () => {
