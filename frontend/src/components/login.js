@@ -35,7 +35,7 @@ let checkInput = () => {
 }
 
 let showModal = (message) => {
-    errorModal(message);
+    errorModal("Login error", message);
 }
 
 let setLogin = (apiUrl) => {

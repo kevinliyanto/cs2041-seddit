@@ -23,7 +23,7 @@ function initApp(apiUrl) {
 
     firstRoute(apiUrl);
 
-    errorModal("This is from main.js\nPlease remove when you're done.");
+    // errorModal("This is from main.js\nPlease remove when you're done.");
 }
 
 export default initApp;

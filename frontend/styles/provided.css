@@ -224,6 +224,7 @@ footer {
 
 .post-middle {
   grid-area: p-middle;
+  background-color: lightgrey;
 }
 
 .post-right {
@@ -231,6 +232,7 @@ footer {
   grid-area: p-right;
   grid-template-rows: auto auto auto;
   grid-template-areas: 'pr-upper' 'pr-middle' 'pr-bottom';
+  background-color: lightgrey;
 }
 
 .post-wrapper {
@@ -268,15 +270,24 @@ footer {
   border-radius: 3px;
   text-transform: uppercase;
   font-weight: bold;
+  height: 1.5rem;
+  width: 1.5rem;
+  cursor: pointer;
+  text-align: center;
 }
 
 .post-upvote {
   width: 1.5rem;
+  height: 1.5rem;
   line-height: 1.5rem;
   text-align: center;
   cursor: pointer;
   border-radius: 0.25rem;
   background-color: lightgray;
+}
+
+.post-upvote-active {
+  background-color: yellow;
 }
 
 .post-votes {
@@ -286,8 +297,18 @@ footer {
 }
 
 .post-expandbutton {
-
+  
 }
+
+.post-content {
+  background-color: white;
+  overflow: hidden;
+  padding: 12px 12px;
+  border-radius: 5px;
+  border: 3px solid;
+  border-color: black;
+}
+
 
 .user-layout {
   grid-template-rows: 50px 20px 20px 50px 50px;

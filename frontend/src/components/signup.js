@@ -70,7 +70,7 @@ let checkInput = () => {
 }
 
 let showModal = (message) => {
-    errorModal(message);
+    errorModal("Signup error", message);
 }
 
 let setSignup = (apiUrl) => {
