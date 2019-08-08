@@ -3,6 +3,8 @@ import setSmallPost from './sub/smallpost.js';
 import { checkLogged, setLastPage } from "./storage/setlocalstorage.js";
 import { getUser } from "./requester/request_user.js";
 import { getPost } from './requester/request_post.js';
+import { errorModal } from './sub/modal.js';
+import { routeHome } from '../router/route.js';
 
 let setFeed = () => {
     let feed = document.createElement("ul");
@@ -89,7 +91,7 @@ let generateUser = (apiUrl, res) => {
         getPost(apiUrl, arr[i])
             .then(handleError)
             .then((res) => {
-                let list = setSmallPost(res);
+                let list = setSmallPost(apiUrl, res);
                 feed.appendChild(list);
             })
             .catch(() => {
@@ -102,8 +104,9 @@ let generateInvalidUsername = () => {
     // Page not found
 }
 
-let generateNoAccess = () => {
-    // Invalid access
+let generateNoAccess = (apiUrl) => {
+    routeHome(apiUrl);
+    errorModal("Error", "You are not allowed to access user page without any login");
 }
 
 let setMainUser = (apiUrl, username) => {
@@ -142,7 +145,7 @@ let setMainUser = (apiUrl, username) => {
             });
     } else {
         // Generate can't access page
-        generateNoAccess();
+        generateNoAccess(apiUrl);
     }
 }
 

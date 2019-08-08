@@ -3,6 +3,8 @@ import homePage from '../components/home.js';
 import signupPage from '../components/signup.js';
 import invalidPage from '../components/invalid.js';
 import userPage from '../components/user.js';
+import { checkLogged } from '../components/storage/setlocalstorage.js';
+import { errorModal } from '../components/sub/modal.js';
 
 let routeHome = (apiUrl) => {
     // console.log("entering home");
@@ -12,17 +14,30 @@ let routeHome = (apiUrl) => {
 
 let routeRegister = (apiUrl) => {
     // console.log("entering signup");
+    if(!checkLogged()){
+        errorModal("Error", "You are already logged in");
+        return;
+    }
     history.replaceState(null, null, document.location.pathname + '#signup')
     signupPage(apiUrl);
 }
 
 let routeLogin = (apiUrl) => {
     // console.log("entering login");
+    if(checkLogged()){
+        errorModal("Error", "You are already logged in");
+        return;
+    }
     history.replaceState(null, null, document.location.pathname + '#login')
     loginPage(apiUrl);
 }
 
 let routeUser = (apiUrl, user) => {
+    if(!checkLogged()){
+        errorModal("Error", "You are not allowed to access user page without any login");
+        return;
+    }
+
     history.replaceState(null, null, document.location.pathname + '#u/' + user);
     userPage(apiUrl, user);
 }

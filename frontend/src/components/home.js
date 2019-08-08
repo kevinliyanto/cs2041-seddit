@@ -3,11 +3,11 @@ import setSmallPost from './sub/smallpost.js';
 import { getPublicPost, getPrivatePost } from './requester/request_post.js';
 import { checkLogged, setLastPage } from './storage/setlocalstorage.js';
 
-let generatePosts = (file) => {
+let generatePosts = (apiUrl, file) => {
     let feed = document.getElementById("feed");
     for (let i = 0; i < file.posts.length; i++) {
         // console.log(file.posts[i]);
-        let list = setSmallPost(file.posts[i]);
+        let list = setSmallPost(apiUrl, file.posts[i]);
         feed.appendChild(list);
     }
 }
@@ -50,10 +50,10 @@ let setMainHome = (apiUrl) => {
     // else generate public post
     if (checkLogged()){
         getPrivatePost(apiUrl, 0, 10).then((file) => {
-            generatePosts(file);
+            generatePosts(apiUrl, file);
         });
     } else {
-        getPublicPost(apiUrl).then(file => generatePosts(file));
+        getPublicPost(apiUrl).then(file => generatePosts(apiUrl, file));
     }
 
 }

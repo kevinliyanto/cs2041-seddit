@@ -4,6 +4,7 @@ import {
 import {
     upvoteerrorModal
 } from "./modal.js";
+import { routeUser } from "../../router/route.js";
 
 let convertToNow = (timestamp) => {
     let t = new Date(timestamp * 1000);
@@ -36,7 +37,7 @@ let upvoteButton = () => {
     return upvote;
 }
 
-let setSmallPost = (data) => {
+let setSmallPost = (apiUrl, data) => {
 
     let list = document.createElement("li");
     list.setAttribute("data-id-post", data.id);
@@ -92,8 +93,31 @@ let setSmallPost = (data) => {
     // Setting up right side
     upperSide.innerText = data.title;
     upperSide.setAttribute("data-id-title", "");
+    
+    //middleSide.innerText = `Posted by ` + data.meta.author + ` on /s/` + data.meta.subseddit + `. Published on ` + convertToNow(data.meta.published);
 
-    middleSide.innerText = `Posted by ` + data.meta.author + ` on /s/` + data.meta.subseddit + `. Published on ` + convertToNow(data.meta.published);
+    let middletext_1 = document.createElement("a");
+    let middletext_2 = document.createElement("a");
+    let middletext_3 = document.createElement("a");
+    let middletext_4 = document.createElement("a");
+    let middletext_5 = document.createElement("a");
+    
+    middletext_1.innerText = "Posted by ";
+    middletext_2.innerText = data.meta.author;
+    middletext_3.innerText = " on ";
+    middletext_4.innerText = data.meta.subseddit;
+    middletext_5.innerText = ". Published on " + convertToNow(data.meta.published);
+
+    middletext_2.onclick = () => {
+        routeUser(apiUrl, data.meta.author);
+    }
+    
+    middleSide.appendChild(middletext_1);
+    middleSide.appendChild(middletext_2);
+    middleSide.appendChild(middletext_3);
+    middleSide.appendChild(middletext_4);
+    middleSide.appendChild(middletext_5);
+
     middleSide.setAttribute("data-id-author", "");
 
     let contentHidden = document.createElement("div");
