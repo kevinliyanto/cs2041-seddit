@@ -1,10 +1,7 @@
-import setNavbar from './sub/navbar.js';
-import { postLogin } from './requester/request_auth.js';
-import { storeSession, setLastPage, setUserID } from './storage/setlocalstorage.js';
-import { routeHome } from '../router/route.js';
-import { setUserRequest } from './requester/request_user.js';
-import { errorModal } from './sub/modal.js';
-
+import { postLogin } from "../requests.js";
+import { storeSession, fetchUserId, checkLogged } from "../localstorage.js";
+import setNavbar from "./navbar.js";
+import { routeHome } from "../route.js";
 
 let formInput = (type, name, placeholder) => {
     let form = document.createElement("input");
@@ -35,10 +32,37 @@ let checkInput = () => {
 }
 
 let showModal = (message) => {
-    errorModal("Login error", message);
+    console.log("Login error: " + message);
 }
 
-let setLogin = (apiUrl) => {
+let submit = () => {
+    let validInput = checkInput();
+
+    if (validInput){
+        // Login
+        let uname = document.getElementsByName("username");
+        let username = uname[0].value;
+        let passw = document.getElementsByName("password");
+        let password = passw[0].value;
+
+        let payload = {
+            "username": username,
+            "password": password
+        }
+
+        postLogin(payload)
+            .then((res) => {
+                storeSession(username, res.token);
+                fetchUserId();
+                routeHome();
+            })
+            .catch((err) => {
+                showModal(err);
+            });
+    }
+}
+
+let setLogin = () => {
     let loginSection = document.createElement("div");
     loginSection.id = "login-form";
     loginSection.className = "form";
@@ -63,20 +87,20 @@ let setLogin = (apiUrl) => {
     // Create button
     let login = submitButton();
     login.onclick = () => {
-        submit(apiUrl);
+        submit();
     };
 
     userForm.addEventListener('keypress', event => {
         let key = event.keyCode;
         if (key === 13){
-            submit(apiUrl);
+            submit();
         }
     });
 
     passForm.addEventListener('keypress', event => {
         let key = event.keyCode;
         if (key === 13){
-            submit(apiUrl);
+            submit();
         }
     });
 
@@ -89,34 +113,14 @@ let setLogin = (apiUrl) => {
     main.appendChild(loginSection);
 }
 
-let submit = (apiUrl) => {
-    let validInput = checkInput();
+let loginPage = () => {
 
-    if (validInput){
-        // Login
-        let uname = document.getElementsByName("username");
-        let username = uname[0].value;
-        let passw = document.getElementsByName("password");
-        let password = passw[0].value;
-        postLogin(apiUrl, username, password)
-            .then((res) => {
-                storeSession(username, res.token);
-                setUserRequest(apiUrl);
-                routeHome(apiUrl);
-            })
-            .catch((err) => {
-                let no = 'Error ' + err.status + ': ';
-                console.log(err);
-                //alert(no + err.statusText);
-                showModal(no + err.statusText);
-            });
+    if(checkLogged()) {
+        routeHome();
     }
-}
 
-let loginPage = (apiUrl) => {
-    setLastPage("#login");
-    setNavbar(apiUrl);
-    setLogin(apiUrl);
+    setNavbar();
+    setLogin();
 }
 
 export default loginPage;

@@ -1,3 +1,7 @@
+import { setApiUrl } from "./localstorage.js";
+import { firstRoute, routeHome } from "./route.js";
+import loadDefault from "./components/default.js";
+
 /**
  * Written by A. Hinds with Z. Afzal 2018 for UNSW CSE.
  * 
@@ -5,10 +9,6 @@
  */
 
 // import your own scripts here.
-import { initRoute, routeRegister, firstRoute } from './router/route.js';
-import defaultPage from './components/default.js';
-import { getLastPage } from './components/storage/setlocalstorage.js';
-import { errorModal } from './components/sub/modal.js';
 
 
 // your app must take an apiUrl as an argument --
@@ -16,14 +16,9 @@ import { errorModal } from './components/sub/modal.js';
 // different datasets.
 function initApp(apiUrl) {
     // your app initialisation goes here   
-
-    // generate default page
-    initRoute(apiUrl);
-    defaultPage();
-
-    firstRoute(apiUrl);
-
-    // errorModal("This is from main.js\nPlease remove when you're done.");
+    setApiUrl(apiUrl);
+    loadDefault();
+    firstRoute();
 }
 
 export default initApp;

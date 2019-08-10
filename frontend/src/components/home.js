@@ -1,13 +1,14 @@
-import setNavbar from './sub/navbar.js';
-import setSmallPost from './sub/smallpost.js';
-import { getPublicPost, getPrivatePost } from './requester/request_post.js';
-import { checkLogged, setLastPage } from './storage/setlocalstorage.js';
+import { getUserFeed, getPublic } from "../requests.js";
+import setPost from "./singlepost.js";
+import setNavbar from "./navbar.js";
+import { checkLogged } from "../localstorage.js";
 
-let generatePosts = (apiUrl, file) => {
+
+let generatePosts = (file) => {
     let feed = document.getElementById("feed");
     for (let i = 0; i < file.posts.length; i++) {
         // console.log(file.posts[i]);
-        let list = setSmallPost(apiUrl, file.posts[i]);
+        let list = setPost(file.posts[i]);
         feed.appendChild(list);
     }
 }
@@ -20,10 +21,12 @@ let setFeed = () => {
 }
 
 let setRightPanel = () => {
+    // Submit a new post
 
+    
 }
 
-let setMainHome = (apiUrl) => {
+let setMainHome = () => {
     let main = document.getElementById("main");
     // Cleanup main
     while (main.firstChild){
@@ -49,19 +52,19 @@ let setMainHome = (apiUrl) => {
     // Check if user authed, if authed then generate user post
     // else generate public post
     if (checkLogged()){
-        getPrivatePost(apiUrl, 0, 10).then((file) => {
-            generatePosts(apiUrl, file);
+        getUserFeed(0, 10).then((file) => {
+            generatePosts(file);
         });
     } else {
-        getPublicPost(apiUrl).then(file => generatePosts(apiUrl, file));
+        getPublic().then(file => generatePosts(file));
     }
 
 }
 
-let homePage = (apiUrl) => {
-    setLastPage("#home");
-    setNavbar(apiUrl);
-    setMainHome(apiUrl);
+let homePage = () => {
+    // setLastVisited("#home");
+    setNavbar();
+    setMainHome();
 }
 
 export default homePage;

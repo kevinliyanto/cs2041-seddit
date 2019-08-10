@@ -1,13 +1,5 @@
-import {
-    routeLogin,
-    routeRegister,
-    routeHome,
-    routeUser
-} from "../../router/route.js";
-import {
-    checkLogged, getUsername, clearSession
-} from "../storage/setlocalstorage.js";
-
+import { checkLogged, getUsername, clearCreds } from "../localstorage.js";
+import { routeLogin, routeHome, routeSignup, routeUser } from "../route.js";
 
 function searchBar() {
     let search = document.createElement("input");
@@ -45,18 +37,19 @@ function sedditLogo() {
     let logo = document.createElement("h1");
     logo.className = "flex-center logo";
     logo.innerText = "Seddit";
+    logo.id = "logo";
     return logo;
 }
 
 // If user is not logged in
-let generateNavlistPub = (apiUrl) => {
+let generateNavlistPub = () => {
     // console.log("generating navlistpub");
     // Create elements
     let navbar = document.getElementById("navbar");
 
-    let list = document.createElement("ul");
-    list.classList.add("nav");
-    list.id = "navlist-pub";
+    let rightlist = document.createElement("ul");
+    rightlist.classList.add("nav");
+    rightlist.id = "navlist-pub";
 
     let list_1 = document.createElement("li");
     list_1.className = "nav-item";
@@ -70,33 +63,33 @@ let generateNavlistPub = (apiUrl) => {
 
     let login = loginButton();
     login.onclick = () => {
-        routeLogin(apiUrl);
+        routeLogin();
     }
     list_2.appendChild(login);
 
     let signup = signupButton();
     signup.onclick = () => {
-        routeRegister(apiUrl);
+        routeSignup();
     }
     list_3.appendChild(signup);
 
-    list.appendChild(list_1);
-    list.appendChild(list_2);
-    list.appendChild(list_3);
+    rightlist.appendChild(list_1);
+    rightlist.appendChild(list_2);
+    rightlist.appendChild(list_3);
 
     let logo = sedditLogo();
     logo.onclick = () => {
-        routeHome(apiUrl);
+        routeHome();
     }
 
     // Set everything to navbar
     navbar.appendChild(logo);
-    navbar.appendChild(list);
+    navbar.appendChild(rightlist);
     // console.log("navbar set");
 }
 
 // If user is logged in
-let generateNavlistPrivate = (apiUrl) => {
+let generateNavlistPrivate = () => {
     // console.log("generating navlistprivate");
     // Create elements
     let navbar = document.getElementById("navbar");
@@ -105,10 +98,15 @@ let generateNavlistPrivate = (apiUrl) => {
     list.classList.add("nav");
     list.id = "navlist-private";
 
+    let list_0 = document.createElement("li");
+    list_0.className = "nav-item";
     let list_1 = document.createElement("li");
     list_1.className = "nav-item loggedinas";
     let list_2 = document.createElement("li");
     list_2.className = "nav-item";
+
+    let search = searchBar();
+    list_0.appendChild(search);
 
     let a1 = document.createElement("a");
     a1.innerText = "Logged in as user ";
@@ -118,7 +116,7 @@ let generateNavlistPrivate = (apiUrl) => {
     a2.className = "logged-username";
 
     a2.onclick = () => {
-        routeUser(apiUrl, a2.innerText);
+        routeUser(getUsername());
     }
 
     list_1.appendChild(a1);
@@ -126,17 +124,18 @@ let generateNavlistPrivate = (apiUrl) => {
 
     let logout = logoutButton();
     logout.onclick = () => {
-        clearSession();
-        routeHome(apiUrl);
+        clearCreds();
+        routeHome();
     }
     list_2.appendChild(logout);
 
+    list.appendChild(list_0);
     list.appendChild(list_1);
     list.appendChild(list_2);
 
     let logo = sedditLogo();
     logo.onclick = () => {
-        routeHome(apiUrl);
+        routeHome();
     }
 
     // Set everything to navbar
@@ -144,7 +143,7 @@ let generateNavlistPrivate = (apiUrl) => {
     navbar.appendChild(list);
 }
 
-let setNavbar = (apiUrl) => {
+let setNavbar = () => {
     // Check if authed
     // If authed, check if the button is correct
     // If not authed, check if the button is correct
@@ -159,32 +158,30 @@ let setNavbar = (apiUrl) => {
         while (navbar.firstChild) {
             navbar.firstChild.remove();
         }
-        generateNavlistPrivate(apiUrl);
+        generateNavlistPrivate();
     } else if (document.getElementById("navlist-private")) {
         // It's navlist private
         if (checkAuthed) return;
         while (navbar.firstChild) {
             navbar.firstChild.remove();
         }
-        generateNavlistPub(apiUrl);
+        generateNavlistPub();
     } else {
         if (checkAuthed) {
             // Not authed
             while (navbar.firstChild) {
                 navbar.firstChild.remove();
             }
-            generateNavlistPrivate(apiUrl);
+            generateNavlistPrivate();
         } else {
             // Just authed
             while (navbar.firstChild) {
                 navbar.firstChild.remove();
             }
-            generateNavlistPub(apiUrl);
+            generateNavlistPub();
         }
     }
 
-
 }
-
 
 export default setNavbar;

@@ -1,10 +1,18 @@
-import setNavbar from './sub/navbar.js';
-import setSmallPost from './sub/smallpost.js';
-import { checkLogged, setLastPage } from "./storage/setlocalstorage.js";
-import { getUser } from "./requester/request_user.js";
-import { getPost } from './requester/request_post.js';
-import { errorModal } from './sub/modal.js';
-import { routeHome } from '../router/route.js';
+import setPost from "./singlepost.js";
+import {
+    getUserByUsername,
+    getUserById,
+    getPost,
+    getCurrentUser,
+    putUnfollow,
+    putFollow
+} from "../requests.js";
+import setNavbar from "./navbar.js";
+import {
+    checkLogged,
+    getUserId
+} from "../localstorage.js";
+
 
 let setFeed = () => {
     let feed = document.createElement("ul");
@@ -13,8 +21,7 @@ let setFeed = () => {
     return feed;
 }
 
-let setRightPanel = (res) => {
-    // console.log(res);
+let setRightUserPanel = (res) => {
     let mainuser = document.createElement("div");
     mainuser.id = "mainuser";
     mainuser.className = "user-layout";
@@ -79,40 +86,131 @@ let setRightPanel = (res) => {
     mainuser.appendChild(follow);
     mainuser.appendChild(posts);
 
-    let rightpanel = document.getElementById("rightpanel");
-    rightpanel.appendChild(mainuser);
+    return mainuser;
 }
 
-let generateUser = (apiUrl, res) => {
+let followButton = (res) => {
+    let follow = document.createElement("button");
+    follow.innerText = "Follow user";
+    follow.className = "follow-button";
+    follow.id = "followbutton";
+
+    getCurrentUser()
+        .then((current) => {
+            if (current.id == res.id) {
+                follow.disabled = true;
+                follow.classList.toggle("follow-button-disabled");
+                follow.title = "You can't follow yourself";
+            } else {
+                // res is other user
+                if (checkFollowed(current, res.id)) {
+                    follow.classList.toggle("follow-button-active");
+                    follow.innerText = "Unfollow user";
+                }
+
+                follow.onclick = () => {
+                    getCurrentUser().then((current) => {
+                        if (checkFollowed(current, res.id)) {
+                            putUnfollow(res.username)
+                                .then(() => {
+                                    follow.classList.toggle("follow-button-active");
+                                    follow.innerText = "Follow user";
+                                })
+                                .catch(() => {
+                                    console.error("Can't unfollow user");
+                                });
+                        } else {
+                            putFollow(res.username)
+                                .then(() => {
+                                    follow.classList.toggle("follow-button-active");
+                                    follow.innerText = "Unfollow user";
+                                })
+                                .catch(() => {
+                                    console.error("Can't unfollow user");
+                                });
+                        }
+                    });
+                }
+            }
+        });
+    
+    return follow;
+}
+
+let checkFollowed = (origin, targetId) => {
+    for (let i = 0; i < origin.following.length; i++) {
+        if (origin.following[i] == targetId) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+let viewFollowing = () => {
+    
+}
+
+let setEditProfile = () => {
+
+}
+
+let setRightPanel = (res) => {
+
+    let mainuser = setRightUserPanel(res);
+    let follow = followButton(res);
+    
+    let rightpanel = document.getElementById("rightpanel");
+
+    rightpanel.appendChild(mainuser);
+
+    rightpanel.appendChild(follow);
+}
+
+let generateUser = (res) => {
     let feed = document.getElementById("feed");
     let arr = res.posts;
     arr.sort((a, b) => b - a);
+
+    let promises = [];
+
     for (let i = 0; i < arr.length; i++) {
-        getPost(apiUrl, arr[i])
+        let r = getPost(arr[i])
             .then(handleError)
             .then((res) => {
-                let list = setSmallPost(apiUrl, res);
-                feed.appendChild(list);
+                return res;
             })
             .catch(() => {
-
+                console.error("Can't generate user posts");
             });
+        promises.push(r);
     }
+
+    // Allowing all posts to be fetched first before inserting into feed
+    // This promise ignores any unfulfilled promise, in case of any
+    // This snippet was taken from https://davidwalsh.name/promises-results
+    Promise.all(promises.map(p => p.catch(() => undefined)))
+        .then((res) => {
+            for (let i = 0; i < res.length; i++) {
+                let list = setPost(res[i]);
+                feed.appendChild(list);
+            } 
+        });
 }
 
 let generateInvalidUsername = () => {
     // Page not found
 }
 
-let generateNoAccess = (apiUrl) => {
-    routeHome(apiUrl);
-    errorModal("Error", "You are not allowed to access user page without any login");
+let generateNoAccess = () => {
+    // routeHome();
+    // errorModal("Error", "You are not allowed to access user page without any login");
 }
 
-let setMainUser = (apiUrl, username) => {
+let setMainUser = (username) => {
     let main = document.getElementById("main");
     // Cleanup main
-    while (main.firstChild){
+    while (main.firstChild) {
         main.firstChild.remove();
     }
 
@@ -122,22 +220,22 @@ let setMainUser = (apiUrl, username) => {
     let rightpanel = document.createElement("div");
     rightpanel.id = "rightpanel";
     rightpanel.className = "rightpanel";
-    
+
     // Generate feed interface
     let feed = setFeed();
     leftpanel.appendChild(feed);
 
     // Generate right panel interface, similar to reddit
-    
+
     main.appendChild(leftpanel);
     main.appendChild(rightpanel);
 
     // Generate posts for user user
-    if (checkLogged()){
-        getUser(apiUrl, username)
+    if (checkLogged()) {
+        getUserByUsername(username)
             .then(handleError)
             .then((res) => {
-                generateUser(apiUrl, res);
+                generateUser(res);
                 setRightPanel(res);
             })
             .catch((err) => {
@@ -145,7 +243,47 @@ let setMainUser = (apiUrl, username) => {
             });
     } else {
         // Generate can't access page
-        generateNoAccess(apiUrl);
+        generateNoAccess();
+    }
+}
+
+let setMainUserId = (id) => {
+    let main = document.getElementById("main");
+    // Cleanup main
+    while (main.firstChild) {
+        main.firstChild.remove();
+    }
+
+    let leftpanel = document.createElement("div");
+    leftpanel.id = "leftpanel";
+    leftpanel.className = "leftpanel";
+    let rightpanel = document.createElement("div");
+    rightpanel.id = "rightpanel";
+    rightpanel.className = "rightpanel";
+
+    // Generate feed interface
+    let feed = setFeed();
+    leftpanel.appendChild(feed);
+
+    // Generate right panel interface, similar to reddit
+
+    main.appendChild(leftpanel);
+    main.appendChild(rightpanel);
+
+    // Generate posts for user user
+    if (checkLogged()) {
+        getUserById(id)
+            .then(handleError)
+            .then((res) => {
+                generateUser(res);
+                setRightPanel(res);
+            })
+            .catch((err) => {
+                generateInvalidUsername();
+            });
+    } else {
+        // Generate can't access page
+        generateNoAccess();
     }
 }
 
@@ -156,10 +294,21 @@ function handleError(res) {
     return res;
 }
 
-let userPage = (apiUrl, username) => {
-    setLastPage("#u/" + username);
-    setNavbar(apiUrl);
-    setMainUser(apiUrl, username);
+let userPage = (username) => {
+    setNavbar();
+
+    // Restriction is implemented inside set function
+    setMainUser(username);
 }
 
-export default userPage;
+let userPageId = (id) => {
+    setNavbar();
+
+    // Restriction is implemented inside set function
+    setMainUserId(id);
+}
+
+export {
+    userPage,
+    userPageId
+};
