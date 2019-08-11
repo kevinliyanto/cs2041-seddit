@@ -30,10 +30,6 @@ let setFeed = () => {
     return feed;
 }
 
-let setRightPanel = () => {
-    return right_navigation();
-}
-
 let setMainHome = () => {
     let main = document.getElementById("main");
     // Cleanup main
@@ -61,18 +57,15 @@ let setMainHome = () => {
 
     main.appendChild(leftpanel);
 
-    let right = setRightPanel();
-    rightpanel.appendChild(right);
+    rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
     // Check if user authed, if authed then generate user post
     // else generate public post
     if (checkLogged()) {
-        let r = 0;
-        getUserFeed(r, 10)
+        getUserFeed(0, 10)
             .then((file) => {
                 generatePosts(file);
-                r += 10;
             });
         getter();
     } else {

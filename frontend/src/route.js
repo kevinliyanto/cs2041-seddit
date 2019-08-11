@@ -25,6 +25,7 @@ import {
 import {
     settingPage
 } from "./components/settings.js";
+import { allSubseddit } from "./components/allsubseddit.js";
 
 // TODO
 
@@ -116,6 +117,17 @@ let routeSettings = () => {
     storeLastVisited();
 }
 
+let routeAllSubseddit = () => {
+    if (!checkLogged()) {
+        routeLastVisited();
+        modal_errors_load("Error", "You are not logged in yet");
+        return;
+    }
+    history.replaceState(null, null, document.location.pathname + '#s/all');
+    allSubseddit();
+    storeLastVisited();
+}
+
 let routeSubmit = () => {
     if (!checkLogged()) {
         routeLastVisited();
@@ -128,7 +140,9 @@ let routeSubmit = () => {
 }
 
 let routeSubseddit = (subseddit) => {
-
+    if (subseddit == "all") {
+        routeAllSubseddit();
+    }
 }
 
 let routeInvalid = () => {
