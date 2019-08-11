@@ -1,17 +1,35 @@
 import {
     checkLogged,
-    getUserId
+    getUserId,
+    getUsername
 } from "../localstorage.js";
 import {
-    modal_errors_load, modal_upvotecount_load, modal_comments_load
+    modal_upvotecount_load,
+    modal_comments_load,
+    modalError_GetPost,
+    modalError_Downvote,
+    modalError_Upvote,
+    modalError_GetUser,
+    modalError_RestrictionVote,
+    modalError_DeletePost
 } from "./modal.js";
 import {
     routeUser,
     routeSubseddit,
-    routeExpandedPost
+    routeExpandedPost,
+    routeEditPost,
+    routeHome,
+    refresh
 } from "../route.js";
-import { putVote, deleteVote, getPost } from "../requests.js";
-import { convertToNow } from "./timeformat.js";
+import {
+    putVote,
+    deleteVote,
+    getPost,
+    deletePost
+} from "../requests.js";
+import {
+    convertToNow
+} from "./timeformat.js";
 
 
 let upvoteButton = (data) => {
@@ -20,12 +38,12 @@ let upvoteButton = (data) => {
     let button = document.createElement("i");
     button.className = "material-icons md-dark md-inactive";
     button.innerText = "thumb_up";
-    
+
     let togglebutton = (button) => {
         button.classList.toggle("md-inactive");
     }
 
-    if (checkLogged()){
+    if (checkLogged()) {
         button.style.cursor = "pointer";
         getUserId()
             .then((id) => {
@@ -36,9 +54,9 @@ let upvoteButton = (data) => {
                         }
                     })
                     .catch(() => {
-                        console.error("Can't use vote");
+                        modalError_GetPost();
                     });
-    
+
                 button.onclick = () => {
                     checkUpvote(data.id, id)
                         .then((upvoted) => {
@@ -51,7 +69,7 @@ let upvoteButton = (data) => {
                                         votecount.innerText = Number(previous) - 1;
                                     })
                                     .catch(() => {
-                                        console.error("Can't use vote");
+                                        modalError_Downvote();
                                     });
                             } else {
                                 putVote(data.id)
@@ -62,91 +80,28 @@ let upvoteButton = (data) => {
                                         votecount.innerText = Number(previous) + 1;
                                     })
                                     .catch(() => {
-                                        console.error("Can't use vote");
+                                        modalError_Upvote();
                                     });
                             }
                         })
                         .catch(() => {
-                            console.error("Can't use vote");
+                            modalError_GetPost();
                         });
                 }
             })
             .catch(() => {
-                console.error("Can't use vote");
+                modalError_GetUser();
             });
     } else {
         button.onclick = () => {
-            modal_errors_load("Error", "You are not logged in yet");
+            modalError_RestrictionVote();
         }
     }
 
     return button;
 }
 
-let upvoteButton_old = (data) => {
-    // <i class="material-icons" id="item-1">expand_less</i>
-    
-    let button = document.createElement("button");
-    button.className = "small-button post-upvote";
-    button.innerText = "⇧";
-
-    if (checkLogged()){
-        getUserId()
-            .then((id) => {
-                checkUpvote(data.id, id)
-                    .then((res) => {
-                        if (res) button.classList.toggle("post-upvote-active");
-                    })
-                    .catch(() => {
-                        console.error("Can't use vote");
-                    });
-    
-                button.onclick = () => {
-                    checkUpvote(data.id, id)
-                        .then((upvoted) => {
-                            if (upvoted) {
-                                deleteVote(data.id)
-                                    .then(() => {
-                                        button.classList.toggle("post-upvote-active");
-                                        let votecount = document.getElementById("post" + data.id);
-                                        let previous = votecount.innerText;
-                                        votecount.innerText = Number(previous) - 1;
-                                    })
-                                    .catch(() => {
-                                        console.error("Can't use vote");
-                                    });
-                            } else {
-                                putVote(data.id)
-                                    .then(() => {
-                                        button.classList.toggle("post-upvote-active");
-                                        let votecount = document.getElementById("post" + data.id);
-                                        let previous = votecount.innerText;
-                                        votecount.innerText = Number(previous) + 1;
-                                    })
-                                    .catch(() => {
-                                        console.error("Can't use vote");
-                                    });
-                            }
-                        })
-                        .catch(() => {
-                            console.error("Can't use vote");
-                        });
-                }
-            })
-            .catch(() => {
-                console.error("Can't use vote");
-            });
-    } else {
-        button.onclick = () => {
-            modal_errors_load("Error", "You are not logged in yet");
-        }
-    }
-
-    return button;
-}
-
-
-async function checkUpvote (dataid, userid) {
+async function checkUpvote(dataid, userid) {
     return getPost(dataid)
         .then((data) => {
             for (let i = 0; i < data.meta.upvotes.length; i++) {
@@ -175,11 +130,12 @@ let upvoteCount = (data) => {
             getPost(data.id)
                 .then((checkpost) => {
                     let s = "Upvoted by:";
+                    votecount.innerText = checkpost.meta.upvotes.length;
                     if (checkpost.meta.upvotes.length == 0) s = "Post has no upvote";
                     modal_upvotecount_load("Upvotes", s, checkpost.meta.upvotes);
                 })
                 .catch(() => {
-                    console.error("Can't get upvote");
+                    modalError_GetPost();
                 });
         };
     }
@@ -209,9 +165,9 @@ let midColumn = (data) => {
 
     // Setting up middle side
     // Ignore for now, thumbnail not provided
-    if (data.image != null) {
+    if (data.thumbnail != null) {
         let originalImage = document.createElement("img");
-        originalImage.setAttribute('src', "data:image/png;base64," + data.image);
+        originalImage.setAttribute('src', "data:image/png;base64," + data.thumbnail);
 
         originalImage.setAttribute("height", 100);
         originalImage.setAttribute("width", 100);
@@ -286,15 +242,15 @@ let rightColumn = (data) => {
     expandButton.className = "material-icons md-light";
     expandButton.innerText = "comment";
     expandButton.style.cursor = "pointer";
-    
+
     let postcomments = document.createElement("a");
     postcomments.id = "comment" + data.id;
     postcomments.innerText = data.comments.length + " comments";
     postcomments.className = "post-comments";
-    
+
     bottomSide.appendChild(expandButton);
     bottomSide.appendChild(postcomments);
-    bottomSide.appendChild(contentHidden);
+    
 
     expandButton.addEventListener("click", () => {
 
@@ -327,9 +283,77 @@ let rightColumn = (data) => {
                     modal_comments_load("Comments", checkpost);
                 })
                 .catch(() => {
-                    console.error("Error fetching post");
+                    modalError_GetPost();
                 });
         };
+
+        if (getUsername() == data.meta.author) {
+            // User is author
+            // Add option to remove / edit post
+    
+            let edit = document.createElement("a");
+            edit.innerText = "edit";
+            edit.className = "post-comments post-underline";
+            edit.onclick = () => {
+                routeEditPost(data.id);
+            }
+    
+            bottomSide.appendChild(edit);
+    
+            let remove = document.createElement("a");
+            remove.innerText = "remove";
+            remove.className = "post-remove post-underline";
+    
+            remove.onclick = () => {
+                if (remove.innerText == "remove") {
+                    remove.classList.toggle("post-underline");
+    
+                    remove.innerText = "are you sure?";
+                    let yes = document.createElement("a");
+                    yes.innerText = "yes";
+                    yes.className = "post-option post-underline";
+    
+                    let space = document.createElement("a");
+                    space.innerText = "/";
+                    space.className = "post-option"
+    
+                    let no = document.createElement("a");
+                    no.innerText = "no";
+                    no.className = "post-option post-underline";
+    
+                    let cancelremove = () => {
+                        bottomSide.removeChild(yes);
+                        bottomSide.removeChild(space);
+                        bottomSide.removeChild(no);
+                        remove.classList.toggle("post-underline");
+                        remove.innerText = "remove";
+                    }
+    
+                    yes.onclick = () => {
+                        // Remove post
+                        deletePost(data.id)
+                            .then(() => {
+                                refresh();
+                            })
+                            .catch(() => {
+                                modalError_DeletePost();
+                            })
+                    }
+    
+                    no.onclick = () => {
+                        cancelremove();
+                    }
+    
+                    bottomSide.appendChild(yes);
+                    bottomSide.appendChild(space);
+                    bottomSide.appendChild(no);
+                } else {
+                    // It won't be clickable
+                }
+            }
+    
+            bottomSide.appendChild(remove);
+        }
 
         middletext_2.classList.add("post-underline");
         middletext_2.onclick = () => {
@@ -347,6 +371,8 @@ let rightColumn = (data) => {
         }
     }
 
+    bottomSide.appendChild(contentHidden);
+
     return rightCol;
 }
 
@@ -360,12 +386,11 @@ let setPost = (data) => {
 
     let leftCol = leftColumn(data);
 
-    
     let rightCol = rightColumn(data);
-    
+
     list.appendChild(wrapper);
     wrapper.appendChild(leftCol);
-    if (data.thumbnail != null){
+    if (data.thumbnail != null) {
         wrapper.className = "post-wrapper";
         let midCol = midColumn(data);
         wrapper.appendChild(midCol);
@@ -373,8 +398,10 @@ let setPost = (data) => {
 
     wrapper.appendChild(rightCol);
 
-
     return list;
 }
 
-export default setPost;
+export {
+    checkUpvote,
+    setPost
+}

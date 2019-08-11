@@ -62,6 +62,66 @@ let modal_errors_load = (header, text) => {
     }
 }
 
+let modal_success = () => {
+    let content = document.createElement("div");
+    content.className = "modal-general modal-content";
+
+    let modal_header = document.createElement("div");
+    modal_header.className = "modal-header-style2";
+    modal_header.id = "modal_header_succ";
+
+    let modal_body = document.createElement("div");
+    modal_body.className = "modal-body";
+    modal_body.id = "modal_body_succ";
+
+    let close_button = document.createElement("span");
+    close_button.className = "close-button";
+    close_button.id = "modal_close_button_succ";
+    close_button.innerText = "✕";
+    
+    let modal_header_text = document.createElement("h3");
+    modal_header_text.id = "modal_header_text_succ";
+
+    let modal_body_text = document.createElement("p");
+    modal_body_text.id = "modal_body_text_succ";
+
+    modal_header.appendChild(close_button);
+    modal_header.appendChild(modal_header_text);
+    modal_body.appendChild(modal_body_text);
+
+    content.appendChild(modal_header);
+    content.appendChild(modal_body);
+
+    return content;
+}
+
+let modal_success_load = (header, text) => {
+    let modal_header_text = document.getElementById("modal_header_text_succ");
+    let modal_body_text = document.getElementById("modal_body_text_succ");
+
+    if (modal_header_text == null || modal_body_text == null) {
+        console.error("Can't find modal. This should not happen.");
+    }
+
+    modal_header_text.innerText = header;
+    modal_body_text.innerText = text;
+
+    // show modal
+    let modal = document.getElementById("modal_4");
+    modal.style.display = "block";
+
+    let close_button = document.getElementById("modal_close_button_succ");
+    close_button.onclick = () => {
+        modal.style.display = "none";
+    }
+
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+}
+
 let modal_upvotecount = () => {
     let content = document.createElement("div");
     content.className = "modal-general modal-content";
@@ -130,7 +190,7 @@ let modal_upvotecount_load = (header, cont, arrayofuserid) => {
                 list.appendChild(word);
             })
             .catch(() => {
-                console.error("Failed to fetch a user");
+                modalError_GetUser();
             });
 
         modal_body_text.appendChild(list);
@@ -229,6 +289,8 @@ let modal_comments_load = (header, data) => {
     
             putComment(payload, data.id)
                 .then(() => {
+                    submitbox.value = "";
+
                     let number = '' + data.id;
                     let commentnumber = document.getElementById("comment" + number);
                     let num = commentnumber.innerText.match(/(\d+)/);
@@ -241,14 +303,14 @@ let modal_comments_load = (header, data) => {
                             return;
                         })
                         .catch(() => {
-                            console.error("Can't get post");
+                            modalError_GetPost();
                         });
                 })
                 .catch(() => {
-                    console.error("Can't post comment");
+                    modalError_Comment();
                 })
         } else {
-            modal_errors_load("Error", "Comment length should be at least 1");
+            modalError_RestrictionComment();
         }
     
     }
@@ -320,11 +382,98 @@ let modal_comments_load = (header, data) => {
     }
 }
 
+let modalError_Upvote = () => {
+    modal_errors_load("Error", "Can't upvote the post");
+}
+
+let modalError_Downvote = () => {
+    modal_errors_load("Error", "Can't remove upvote from the post");
+}
+
+let modalError_Comment = () => {
+    modal_errors_load("Error", "Can't put comment");
+}
+
+let modalError_Login = () => {
+    modal_errors_load("Error", "Wrong username or password");
+}
+
+let modalError_Signup = () => {
+    modal_errors_load("Error", "Username is already taken");
+}
+
+let modalError_Follow = () => {
+    modal_errors_load("Error", "Can't follow user");
+}
+
+let modalError_Unfollow = () => {
+    modal_errors_load("Error", "Can't unfollow user");
+}
+
+let modalError_GetPost = () => {
+    modal_errors_load("Error", "Can't fetch post. Try refreshing this page.");
+}
+
+let modalError_SetPost = () => {
+    modal_errors_load("Error", "Can't edit post");
+}
+
+let modalError_DeletePost = () => {
+    modal_errors_load("Error", "Can't delete post");
+}
+
+let modalError_PushPost = () => {
+    modal_errors_load("Error", "Can't submit post");
+}
+
+let modalError_RestrictionSetPost = () => {
+    modal_errors_load("Error", "You are not allowed to modify others post");
+}
+
+let modalError_RestrictionComment = () => {
+    modal_errors_load("Error", "Comment length should be at least 1");
+}
+
+let modalError_GetUser = () =>{
+    modal_errors_load("Error", "Error on getting user details. Try refreshing this page.");
+}
+
+let modalError_SetUser = () =>{
+    modal_errors_load("Error", "Can't modify user settings. Make sure that all forms are valid.");
+}
+
+let modalError_RestrictionVote = () => {
+    modal_errors_load("Error", "You are not logged in yet");
+}
+
+let modalError_InvalidUser = () => {
+    modal_errors_load("Error", "Invalid username");
+}
+
 export {
     modal_errors,
     modal_errors_load,
+    modal_success,
+    modal_success_load,
     modal_upvotecount,
     modal_upvotecount_load,
     modal_comments,
-    modal_comments_load
+    modal_comments_load,
+
+    modalError_Comment,
+    modalError_DeletePost,
+    modalError_Follow,
+    modalError_GetPost,
+    modalError_Login,
+    modalError_PushPost,
+    modalError_SetPost,
+    modalError_Signup,
+    modalError_Unfollow,
+    modalError_Upvote,
+    modalError_RestrictionSetPost,
+    modalError_GetUser,
+    modalError_Downvote,
+    modalError_RestrictionComment,
+    modalError_SetUser,
+    modalError_RestrictionVote
 }

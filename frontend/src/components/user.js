@@ -1,4 +1,6 @@
-import setPost from "./singlepost.js";
+import {
+    setPost
+} from "./singlepost.js";
 import {
     getUserByUsername,
     getUserById,
@@ -10,14 +12,25 @@ import {
 import setNavbar from "./navbar.js";
 import {
     checkLogged,
-    getUserId
+    getUserId,
+    getUsername
 } from "../localstorage.js";
-import { modal_upvotecount_load } from "./modal.js";
+import {
+    modal_upvotecount_load,
+    modalError_Unfollow,
+    modalError_Follow
+} from "./modal.js";
+import {
+    routeSettings
+} from "../route.js";
+import {
+    right_navigation
+} from "./rightpanel.js";
 
 
 let setFeed = () => {
     let feed = document.createElement("ul");
-    feed.id = "feed";
+    feed.id = "feed_user";
     feed.setAttribute("data-id-feed", "");
     return feed;
 }
@@ -28,7 +41,7 @@ let setRightUserPanel = (res) => {
     mainuser.className = "user-layout";
 
     let username = document.createElement("div");
-    username.innerText = res.name;
+    username.innerText = res.username;
     username.className = "user-uname";
 
     let name = document.createElement("div");
@@ -40,7 +53,7 @@ let setRightUserPanel = (res) => {
     email.className = "user-longdetail";
 
     let following = document.createElement("div");
-    following.className = "user-numeric user-numeric-clickable";
+    following.className = "user-numeric";
 
     let following_top = document.createElement("div");
     following_top.className = "user-numeric-top";
@@ -81,10 +94,17 @@ let setRightUserPanel = (res) => {
     mainuser.appendChild(following);
     mainuser.appendChild(followers);
     mainuser.appendChild(posts);
-    
-    following.onclick = () => {
-        modal_upvotecount_load("Following", "", res.following);
-    }
+
+    getCurrentUser()
+        .then((current) => {
+            if (current.id == res.id) {
+                following.classList.add("user-numeric-clickable");
+                following.title = "Click to show list of users followed";
+                following.onclick = () => {
+                    modal_upvotecount_load("Following", "", res.following);
+                }
+            }
+        });
 
     return mainuser;
 }
@@ -95,46 +115,48 @@ let followButton = (res) => {
     follow.className = "follow-button";
     follow.id = "followbutton";
 
-    getCurrentUser()
-        .then((current) => {
-            if (current.id == res.id) {
-                follow.disabled = true;
-                follow.innerText = "Follow disabled";
-                follow.classList.toggle("follow-button-disabled");
-                follow.title = "You can't follow yourself";
-            } else {
-                // res is other user
+    // Modified follow button to make less request
+    if (getUsername() == res.username) {
+        follow.disabled = true;
+        follow.innerText = "Follow disabled";
+        follow.classList.toggle("follow-button-disabled");
+        follow.title = "You can't follow yourself";
+    } else {
+        // res is other user
+        getCurrentUser()
+            .then((current) => {
                 if (checkFollowed(current, res.id)) {
                     follow.classList.toggle("follow-button-active");
                     follow.innerText = "Unfollow user";
                 }
 
                 follow.onclick = () => {
-                    getCurrentUser().then((current) => {
-                        if (checkFollowed(current, res.id)) {
-                            putUnfollow(res.username)
-                                .then(() => {
-                                    follow.classList.toggle("follow-button-active");
-                                    follow.innerText = "Follow user";
-                                })
-                                .catch(() => {
-                                    console.error("Can't unfollow user");
-                                });
-                        } else {
-                            putFollow(res.username)
-                                .then(() => {
-                                    follow.classList.toggle("follow-button-active");
-                                    follow.innerText = "Unfollow user";
-                                })
-                                .catch(() => {
-                                    console.error("Can't unfollow user");
-                                });
-                        }
-                    });
+                    getCurrentUser()
+                        .then((current) => {
+                            if (checkFollowed(current, res.id)) {
+                                putUnfollow(res.username)
+                                    .then(() => {
+                                        follow.classList.toggle("follow-button-active");
+                                        follow.innerText = "Follow user";
+                                    })
+                                    .catch(() => {
+                                        modalError_Unfollow();
+                                    });
+                            } else {
+                                putFollow(res.username)
+                                    .then(() => {
+                                        follow.classList.toggle("follow-button-active");
+                                        follow.innerText = "Unfollow user";
+                                    })
+                                    .catch(() => {
+                                        modalError_Follow();
+                                    });
+                            }
+                        });
                 }
-            }
-        });
-    
+            });
+    }
+
     return follow;
 }
 
@@ -147,29 +169,33 @@ let checkFollowed = (origin, targetId) => {
     return false;
 }
 
-
-let viewFollowing = () => {
-    
-}
-
-let setEditProfile = () => {
-
-}
-
 let setRightPanel = (res) => {
 
     let mainuser = setRightUserPanel(res);
     let follow = followButton(res);
-    
+
     let rightpanel = document.getElementById("rightpanel");
 
     rightpanel.appendChild(mainuser);
 
     rightpanel.appendChild(follow);
+
+    if (getUsername() == res.username) {
+        // Add an option to redirect to user settings
+        let settings = document.createElement("button");
+        settings.innerText = "User settings";
+        settings.className = "follow-button";
+        settings.onclick = () => {
+            routeSettings();
+        }
+        rightpanel.appendChild(settings);
+    }
+
+    rightpanel.appendChild(right_navigation());
 }
 
 let generateUser = (res) => {
-    let feed = document.getElementById("feed");
+    let feed = document.getElementById("feed_user");
     let arr = res.posts;
     arr.sort((a, b) => b - a);
 
@@ -182,7 +208,7 @@ let generateUser = (res) => {
                 return res;
             })
             .catch(() => {
-                console.error("Can't generate user posts");
+                console.error("Can't get user post");
             });
         promises.push(r);
     }
@@ -195,17 +221,35 @@ let generateUser = (res) => {
             for (let i = 0; i < res.length; i++) {
                 let list = setPost(res[i]);
                 feed.appendChild(list);
-            } 
+            }
         });
 }
 
 let generateInvalidUsername = () => {
-    // Page not found
-}
+    let main = document.getElementById("main");
+    // Cleanup main
+    while (main.firstChild) {
+        main.firstChild.remove();
+    }
 
-let generateNoAccess = () => {
-    // routeHome();
-    // errorModal("Error", "You are not allowed to access user page without any login");
+    let leftpanel = document.createElement("div");
+    leftpanel.id = "leftpanel";
+    leftpanel.className = "leftpanel";
+    let rightpanel = document.createElement("div");
+    rightpanel.id = "rightpanel";
+    rightpanel.className = "rightpanel";
+
+    // Generate none
+    let error = document.createElement("h1");
+    error.innerText = "Page is not available";
+
+    leftpanel.appendChild(error);
+    // Generate right panel interface, similar to reddit
+
+    main.appendChild(leftpanel);
+
+    rightpanel.appendChild(right_navigation());
+    main.appendChild(rightpanel);
 }
 
 let setMainUser = (username) => {
@@ -232,20 +276,16 @@ let setMainUser = (username) => {
     main.appendChild(rightpanel);
 
     // Generate posts for user user
-    if (checkLogged()) {
-        getUserByUsername(username)
-            .then(handleError)
-            .then((res) => {
-                generateUser(res);
-                setRightPanel(res);
-            })
-            .catch((err) => {
-                generateInvalidUsername();
-            });
-    } else {
-        // Generate can't access page
-        generateNoAccess();
-    }
+    getUserByUsername(username)
+        .then(handleError)
+        .then((res) => {
+            generateUser(res);
+            setRightPanel(res);
+        })
+        .catch((err) => {
+            generateInvalidUsername();
+        });
+
 }
 
 let setMainUserId = (id) => {
@@ -272,20 +312,15 @@ let setMainUserId = (id) => {
     main.appendChild(rightpanel);
 
     // Generate posts for user user
-    if (checkLogged()) {
-        getUserById(id)
-            .then(handleError)
-            .then((res) => {
-                generateUser(res);
-                setRightPanel(res);
-            })
-            .catch((err) => {
-                generateInvalidUsername();
-            });
-    } else {
-        // Generate can't access page
-        generateNoAccess();
-    }
+    getUserById(id)
+        .then(handleError)
+        .then((res) => {
+            generateUser(res);
+            setRightPanel(res);
+        })
+        .catch((err) => {
+            generateInvalidUsername();
+        });
 }
 
 function handleError(res) {
@@ -298,14 +333,14 @@ function handleError(res) {
 let userPage = (username) => {
     setNavbar();
 
-    // Restriction is implemented inside set function
+    // Restriction is implemented in route
     setMainUser(username);
 }
 
 let userPageId = (id) => {
     setNavbar();
 
-    // Restriction is implemented inside set function
+    // Restriction is implemented in route
     setMainUserId(id);
 }
 

@@ -83,15 +83,7 @@ footer {
   text-transform: uppercase;
   padding: 7.5px 15px;
   font-weight: bold;
-}
-
-.button-primary {
-  color: var(--reddit-blue);
-}
-
-.button-secondary {
-  background-color: var(--reddit-blue);
-  color: white;
+  cursor: pointer;
 }
 
 .banner>*,
@@ -134,6 +126,11 @@ html,
 body {
   font-family: "Helvetica", serif;
   min-width: 670px;
+}
+
+p {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 footer {
@@ -194,11 +191,37 @@ footer {
   font-weight: bold;
   background-color: #FF5700;
   color: #eee8e8;
-  margin-top: 12px;
+  margin-top: 4px;
+}
+
+.submit-button:hover {
+  cursor: pointer;
 }
 
 .submit-button:active {
   background-color: #DD3500;
+  color: #ffffff;
+}
+
+.submit-button-2 {
+  border: 1px solid;
+  border-color: #0079D3;
+  border-radius: 4px;
+  margin-top: 5px;
+  text-transform: uppercase;
+  padding: 7.5px 18px;
+  font-weight: bold;
+  background-color: #0079D3;
+  color: #eee8e8;
+  margin-top: 4px;
+}
+
+.submit-button-2:hover {
+  cursor: pointer;
+}
+
+.submit-button-2:active {
+  background-color: rgb(59, 0, 197);
   color: #ffffff;
 }
 
@@ -228,7 +251,8 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  background-color: #5cb85c;
+  border-radius: 4px;
 }
 
 .post-middle {
@@ -252,27 +276,27 @@ footer {
 .post-wrapper {
   border-radius: 7px;
   margin: 4px;
-  left: 4px;
+
   padding: 0 1px;
   display: grid;
   grid-template-columns: 35px 110px auto;
   grid-template-areas: 'p-left p-middle p-right''p-left p-middle p-right''p-left p-middle p-right';
   overflow: hidden;
-  background-color: rgb(241, 241, 241);
-  border: 2px solid #555555;
+  background-color: rgba(144, 212, 142, 0.466);
+
 }
 
 .post-wrapper-nopicture {
   border-radius: 7px;
   margin: 4px;
-  left: 4px;
+
   padding: 0 1px;
   display: grid;
-  grid-template-columns: 35px auto;
-  grid-template-areas: 'p-left p-right''p-left p-right''p-left p-right';
+  grid-template-columns: 35px 3px auto;
+  grid-template-areas: 'p-left . p-right''p-left . p-right''p-left . p-right';
   overflow: hidden;
-  background-color: rgb(241, 241, 241);
-  border: 2px solid #555555;
+  background-color: rgba(144, 212, 142, 0.466);
+
 }
 
 
@@ -337,9 +361,27 @@ footer {
 }
 
 .post-comments {
-  font-size: 13px;
+  font-size: 12px;
   margin-left: 6px;
   margin-right: 6px;
+  color: grey;
+  font-weight: bold;
+}
+
+.post-remove {
+  font-size: 12px;
+  margin-left: 6px;
+  margin-right: 2px;
+  color: grey;
+  font-weight: bold;
+}
+
+.post-option {
+  font-size: 12px;
+  margin-left: 2px;
+  margin-right: 2px;
+  color: grey;
+  font-weight: bold;
 }
 
 .post-underline:hover {
@@ -379,9 +421,10 @@ footer {
 
 .user-layout {
   grid-template-rows: 50px 20px 20px 45px 45px 45px;
-  grid-template-areas: 'user-uname' 'user-longdetail' 'user-longdetail' 'user-numeric''user-numeric';
+  grid-template-areas: 'user-uname''user-longdetail''user-longdetail''user-numeric''user-numeric';
   overflow: hidden;
   border: 2px solid var(--reddit-grey);
+  border-radius: 6px;
   margin-bottom: 10px;
 }
 
@@ -481,7 +524,7 @@ footer {
 }
 
 .modal-body {
-  padding: 2px 16px;
+  padding: 6px 16px;
   min-height: 1rem;
 }
 
@@ -520,6 +563,7 @@ footer {
   font-weight: bold;
   cursor: pointer;
   width: 100%;
+  margin-bottom: 10px;
 }
 
 .follow-button-active {
@@ -539,22 +583,30 @@ footer {
 .submission-title {
   width: 100%;
   height: 40px;
-  border: 2px solid #000000;
+  border: 2px solid;
   max-height: 200px;
   font-size: 26px;
+  border-radius: 5px;
 }
 
 .submission-text {
   width: 100%;
   height: 120px;
+  border-radius: 5px;
 }
 
 .submission-sub {
   width: 100%;
   height: 30px;
   font-size: 22px;
+  border-radius: 5px;
 }
 
+.submission-sub-edit {
+  width: 100%;
+  font-size: 22px;
+  margin: 0;
+}
 .submission {
   margin: 10px;
   min-height: 30px;
@@ -607,12 +659,142 @@ footer {
   margin-left: 10px;
 }
 
-.material-icons.md-dark { 
+.material-icons.md-dark {
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.85); 
+  color: rgba(0, 0, 0, 0.85);
 }
-.material-icons.md-dark.md-inactive { color: rgba(70, 70, 70, 0.2); }
-.material-icons.md-light { 
+
+.material-icons.md-dark.md-inactive {
+  color: rgba(70, 70, 70, 0.2);
+}
+
+.material-icons.md-light {
   padding: 5px;
-  color: rgb(78, 78, 78); 
+  color: rgb(78, 78, 78);
+}
+
+
+.exp-container {
+  display: grid;
+  grid-gap: 5px 15px;
+  grid-template-columns: 40px auto;
+  grid-template-rows: minmax(40px, auto) minmax(30px, auto) minmax(30px, auto) auto auto auto;
+  grid-template-areas: "exp-vote exp-title""exp-vote exp-detail""exp-vote exp-set""exp-vote exp-content""exp-commentbox exp-commentbox""exp-comments exp-comments";
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+.exp-vote {
+  grid-area: exp-vote;
+  background-color: #5cb85c;
+  border-radius: 4px;
+  padding: 3px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exp-title {
+  grid-area: exp-title;
+  font-weight: bold;
+  font-size: 28px;
+}
+
+.exp-detail {
+  grid-area: exp-detail;
+  font-size: 16px;
+}
+
+.exp-set {
+  grid-area: exp-set;
+  font-size: 16px;
+}
+
+.exp-content {
+  grid-area: exp-content;
+}
+
+.exp-commentbox {
+  grid-area: exp-commentbox;
+}
+
+.exp-comments {
+  grid-area: exp-comments;
+}
+
+.right-content {
+  overflow: hidden;
+  border: 2px solid var(--reddit-grey);
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-button {
+  border: 1px solid;
+  background-color: #2978a7;
+  color: white;
+  border-radius: 4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin: 5px;
+}
+
+.nav-button:hover {
+  cursor: pointer;
+}
+
+.nav-search {
+  background-color: #2979a750;
+  font: inherit;
+  font-size: var(--body-text-size);
+  border: none;
+  outline: none;
+  border: 1px solid var(--reddit-grey);
+  border-radius: 4px;
+  width: 100%;
+  height: 30px;
+  margin: 5px;
+  padding: 0 0;
+}
+
+.nav-search::placeholder {
+  letter-spacing: 0.5px;
+  font-size: var(--body-text-size);
+}
+
+.nav-search:focus {
+  background-color: white;
+  border-color: var(--reddit-blue);
+}
+
+.button-primary {
+  background-color: white;
+  color: var(--reddit-blue);
+}
+
+.button-secondary {
+  background-color: var(--reddit-blue);
+  color: white;
+}
+
+#feed_user {
+  min-width: 350px;
+  max-width: 1250px;
+  width: 98%;
+  margin: 10px auto;
+  padding: 0;
+}
+
+.marker {
+  height: 80px;
+  text-align: center;
+  align-items: center;
 }

@@ -1,11 +1,11 @@
 import { checkLogged, getUsername, clearCreds } from "../localstorage.js";
-import { routeLogin, routeHome, routeSignup, routeUser } from "../route.js";
+import { routeLogin, routeHome, routeSignup, routeUser, routeSettings } from "../route.js";
 
 function searchBar() {
     let search = document.createElement("input");
     search.id = "search";
     search.setAttribute("data-id-search", "");
-    search.placeholder = "Search Subseddit";
+    search.placeholder = "Search Seddit";
     search.type = "search";
     return search;
 }
@@ -58,20 +58,17 @@ let generateNavlistPub = () => {
     let list_3 = document.createElement("li");
     list_3.className = "nav-item";
 
-    let search = searchBar();
-    list_1.appendChild(search);
-
     let login = loginButton();
     login.onclick = () => {
         routeLogin();
     }
-    list_2.appendChild(login);
+    // list_2.appendChild(login);
 
     let signup = signupButton();
     signup.onclick = () => {
         routeSignup();
     }
-    list_3.appendChild(signup);
+    // list_3.appendChild(signup);
 
     rightlist.appendChild(list_1);
     rightlist.appendChild(list_2);
@@ -109,7 +106,7 @@ let generateNavlistPrivate = () => {
     list_0.appendChild(search);
 
     let a1 = document.createElement("a");
-    a1.innerText = "Logged in as user ";
+    a1.innerText = "Logged in as ";
 
     let a2 = document.createElement("a");
     a2.innerText = getUsername();
@@ -121,6 +118,18 @@ let generateNavlistPrivate = () => {
 
     list_1.appendChild(a1);
     list_1.appendChild(a2);
+
+    let a3 = document.createElement("a");
+    a3.innerText = " | ";
+    let a4 = document.createElement("a");
+    a4.innerText = "settings";
+    a4.className = "logged-username";
+    a4.onclick = () => {
+        routeSettings();
+    }
+
+    list_1.appendChild(a3);
+    list_1.appendChild(a4);
 
     let logout = logoutButton();
     logout.onclick = () => {

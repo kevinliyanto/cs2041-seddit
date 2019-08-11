@@ -2,6 +2,8 @@ import { postLogin } from "../requests.js";
 import { storeSession, fetchUserId, checkLogged } from "../localstorage.js";
 import setNavbar from "./navbar.js";
 import { routeHome } from "../route.js";
+import { right_navigation } from "./rightpanel.js";
+import { modalError_Login } from "./modal.js";
 
 let formInput = (type, name, placeholder) => {
     let form = document.createElement("input");
@@ -31,10 +33,6 @@ let checkInput = () => {
     return true;
 }
 
-let showModal = (message) => {
-    console.log("Login error: " + message);
-}
-
 let submit = () => {
     let validInput = checkInput();
 
@@ -57,7 +55,7 @@ let submit = () => {
                 routeHome();
             })
             .catch((err) => {
-                showModal(err);
+                modalError_Login();
             });
     }
 }
@@ -65,7 +63,7 @@ let submit = () => {
 let setLogin = () => {
     let loginSection = document.createElement("div");
     loginSection.id = "login-form";
-    loginSection.className = "form";
+    loginSection.className = "leftpanel form";
 
     let signinText = document.createElement("h1");
     signinText.innerText = "Sign in";
@@ -82,6 +80,7 @@ let setLogin = () => {
     loginSection.appendChild(document.createElement("br"));
     loginSection.appendChild(passwordText);
     loginSection.appendChild(passForm);
+    loginSection.appendChild(document.createElement("br"));
     loginSection.appendChild(document.createElement("br"));
 
     // Create button
@@ -111,14 +110,16 @@ let setLogin = () => {
         main.firstChild.remove();
     }
     main.appendChild(loginSection);
+
+    let rightpanel = document.createElement("div");
+    rightpanel.id = "rightpanel";
+    rightpanel.className = "rightpanel";
+    let right = right_navigation();
+    rightpanel.appendChild(right);
+    main.appendChild(rightpanel);
 }
 
 let loginPage = () => {
-
-    if(checkLogged()) {
-        routeHome();
-    }
-
     setNavbar();
     setLogin();
 }

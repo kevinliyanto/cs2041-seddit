@@ -1,7 +1,8 @@
 import {
      modal_errors,
      modal_upvotecount,
-     modal_comments
+     modal_comments,
+     modal_success
 } from "./modal.js";
 
 let setHeader = () => {
@@ -21,6 +22,7 @@ let setMain = () => {
 let setModals = () => {
      let modals = document.createElement("div");
 
+     modals.appendChild(setModal4());
      modals.appendChild(setModal3());
      modals.appendChild(setModal2());
      modals.appendChild(setModal1());
@@ -60,6 +62,18 @@ let setModal3 = () => {
      modal.id = "modal_3";
 
      let content = modal_comments();
+     modal.appendChild(content);
+     return modal;
+}
+
+let setModal4 = () => {
+     let modal = document.createElement("div");
+
+     // Modal will be hidden by default until error happens
+     modal.className = "modal";
+     modal.id = "modal_4";
+
+     let content = modal_success();
      modal.appendChild(content);
      return modal;
 }

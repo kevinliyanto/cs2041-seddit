@@ -1,40 +1,36 @@
 import setNavbar from "./navbar.js";
-import {
-    routeHome
-} from "../route.js";
-import {
-    modal_errors_load, modalError_PushPost
-} from "./modal.js";
-import {
-    postPost
-} from "../requests.js";
-import { right_navigation } from "./rightpanel.js";
+import { getPost, putPost } from "../requests.js";
+import { getUsername } from "../localstorage.js";
+import { modal_errors_load, modalError_SetPost, modalError_RestrictionSetPost } from "./modal.js";
+import { routeHome, routeExpandedPost } from "../route.js";
 
-let form = () => {
+let form = (data) => {
     let formdiv = document.createElement("div");
-    formdiv.className = "leftpanel";
 
     let div1 = document.createElement("div");
     let submission = document.createElement("h1");
-    submission.innerText = "Submit to Seddit";
+    submission.innerText = "Edit your post";
     div1.appendChild(submission);
 
     let div2 = document.createElement("div");
-    let titleField = document.createElement("input");
+    let titleField = document.createElement("textarea");
     titleField.className = "submission-title";
     titleField.placeholder = "Insert post title";
+    titleField.innerText = data.title;
     div2.appendChild(titleField);
 
     let div3 = document.createElement("div");
     let textField = document.createElement("textarea");
     textField.className = "submission-text";
     textField.placeholder = "Insert text here";
+    textField.innerText = data.text;
     div3.appendChild(textField);
 
     let div4 = document.createElement("div");
-    let subseddit = document.createElement("input");
-    subseddit.className = "submission-sub";
+    let subseddit = document.createElement("h4");
+    subseddit.className = "submission-sub-edit";
     subseddit.placeholder = "Subseddit";
+    subseddit.innerText = "Subseddit: " + data.meta.subseddit;
     div4.appendChild(subseddit);
 
     let div5 = document.createElement("div");
@@ -44,7 +40,7 @@ let form = () => {
     div5.appendChild(image);
 
     let div6 = document.createElement("div");
-    let submit = document.createElement("submit");
+    let submit = document.createElement("button");
     submit.className = "submit-button-2";
     submit.innerText = "Submit";
     div6.appendChild(submit);
@@ -61,6 +57,14 @@ let form = () => {
     formdiv.appendChild(div5);
     div6.className = "submission";
     formdiv.appendChild(div6);
+    
+    let div7 = document.createElement("div");
+    let cancel = document.createElement("button");
+    cancel.className = "submit-button";
+    cancel.innerText = "Cancel submission";
+    div7.appendChild(cancel);
+    div7.className = "submission";
+    formdiv.appendChild(div7);
 
     submit.onclick = () => {
         let title = titleField.value;
@@ -78,7 +82,7 @@ let form = () => {
             modal_errors_load("Error", "Invalid subseddit name");
             return;
         }
-
+        
         let re_img = /\W(\w+\.png)$/
         if (imgPath != "" && !re_img.test(imgPath)) {
             modal_errors_load("Error", "Invalid image provided. Please provide image with extension \".png\"");
@@ -87,16 +91,16 @@ let form = () => {
 
         let sseddit = "";
         if (sub.length != 0) {
-            sseddit = sub.match(re_sub)[sub.match(re_sub).length - 1];
+            sseddit = sub.match(re_sub)[sub.match(re_sub).length - 1]; 
         }
-
+        
         if (imgPath == "") {
-            submitPost(title, text, sseddit, "")
+            resubmitPost(data.id, title, text, sseddit, data.image)
                 .then(() => {
-                    routeHome();
+                    routeExpandedPost(data.id);
                 })
-                .catch(() => {
-                    modalError_PushPost();
+                .catch((r) => {
+                    modalError_SetPost();
                 });
         } else {
             let loadImage = (image) => {
@@ -106,12 +110,12 @@ let form = () => {
                     // console.log(reader.result);
                     let re = /^data\:image\/png\;base64\,(.*)$/;
                     let imageb64 = reader.result.match(re)[1];
-                    submitPost(title, text, sseddit, imageb64)
+                    resubmitPost(data.id, title, text, sseddit, imageb64)
                         .then(() => {
-                            routeHome();
+                            routeExpandedPost(data.id);
                         })
-                        .catch(() => {
-                            modalError_PushPost();
+                        .catch((r) => {
+                            modalError_SetPost();
                         });
                 }
                 reader.readAsDataURL(fi);
@@ -120,18 +124,24 @@ let form = () => {
         }
     }
 
+    cancel.onclick = () => {
+        routeExpandedPost(data.id);
+    }
+
     return formdiv;
 }
 
-async function submitPost(title, text, subseddit, image) {
+async function resubmitPost (id, title, text, subseddit, image) {
     let payload = {
         "title": title,
         "text": text,
-        "subseddit": subseddit,
-        "image": image
+        "subseddit": subseddit
+    }
+    if (image != "") {
+        payload.image = image;
     }
 
-    return postPost(payload)
+    return putPost(payload, id)
         .then((c) => {
             return c;
         })
@@ -140,28 +150,32 @@ async function submitPost(title, text, subseddit, image) {
         });
 }
 
-let setSubmitPage = () => {
+let setEditPage = (data) => {
     let main = document.getElementById("main");
     // Cleanup main
     while (main.firstChild) {
         main.firstChild.remove();
     }
 
-    let formdiv = form();
+    let formdiv = form(data);
     main.appendChild(formdiv);
-
-    let right = document.createElement("div");
-    right.className = "rightpanel";
-    right.appendChild(right_navigation());
-    main.appendChild(right);
 }
 
-let submitPage = () => {
+let editPost = (id) => {
     setNavbar();
-    setSubmitPage();
+    getPost(id)
+        .then((data) => {
+            if (data.meta.author != getUsername()) {
+                throw "User is not allowed to modify others post";
+            }
+            setEditPage(data);
+        })
+        .catch(() => {
+            routeHome();
+            modalError_RestrictionSetPost();
+        })
 }
-
 
 export {
-    submitPage
+    editPost
 }

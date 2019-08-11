@@ -42,7 +42,7 @@ function putPost(payload, id) {
     let token = getToken();
 
     let settings = {
-        method: 'GET',
+        method: 'PUT',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
@@ -314,7 +314,7 @@ function putUser(payload) {
         body: JSON.stringify(payload)
     };
 
-    let result = fetch(apiUrl + "/user/" + id, settings)
+    let result = fetch(apiUrl + "/user/", settings)
         .then(checkresponse)
         .then(res => {
             return res.json();

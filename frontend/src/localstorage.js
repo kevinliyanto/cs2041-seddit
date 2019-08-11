@@ -1,4 +1,5 @@
 import { getUserByUsername } from "./requests.js";
+import { modalError_GetUser } from "./components/modal.js";
 
 function setApiUrl(apiUrl) {
     localStorage.setItem('apiUrl', apiUrl);
@@ -25,7 +26,7 @@ function fetchUserId() {
             localStorage.setItem('id', res.id);
         })
         .catch((e) => {
-            console.error(e);
+            modalError_GetUser();
         });
 }
 

@@ -2,7 +2,8 @@ import setNavbar from "./navbar.js";
 import { postSignup } from "../requests.js";
 import { storeSession, fetchUserId, checkLogged } from "../localstorage.js";
 import { routeHome } from "../route.js";
-import { modal_errors_load } from "./modal.js";
+import { modal_success_load, modalError_Signup } from "./modal.js";
+import { right_navigation } from "./rightpanel.js";
 
 
 let formInput = (type, name, placeholder) => {
@@ -63,9 +64,6 @@ let checkInput = () => {
     return valid;
 }
 
-let showModal = (message) => {
-    modal_errors_load("Signup error", message);
-}
 
 let setSignup = () => {
     let signupSection = document.createElement("div");
@@ -108,6 +106,7 @@ let setSignup = () => {
     signupSection.appendChild(document.createElement("br"));
     signupSection.appendChild(nameText);
     signupSection.appendChild(name);
+    signupSection.appendChild(document.createElement("br"));
     signupSection.appendChild(document.createElement("br"));
 
     userForm.addEventListener('keypress', event => {
@@ -158,6 +157,13 @@ let setSignup = () => {
         main.firstChild.remove();
     }
     main.appendChild(signupSection);
+
+    let rightpanel = document.createElement("div");
+    rightpanel.id = "rightpanel";
+    rightpanel.className = "rightpanel";
+    let right = right_navigation();
+    rightpanel.appendChild(right);
+    main.appendChild(rightpanel);
 }
 
 let submit = () => {
@@ -190,19 +196,15 @@ let submit = () => {
                 storeSession(username, res.token);
                 fetchUserId();
                 routeHome();
+                modal_success_load("Success", "Successfully registered as " + username);
             })
             .catch((err) => {
-                showModal(err);
+                modalError_Signup();
             });
     }
 }
 
 let signupPage = () => {
-
-    if (checkLogged()) {
-        routeHome();
-    }
-
     setNavbar();
     setSignup();
 }
