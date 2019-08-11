@@ -438,6 +438,11 @@ footer {
   display: none;
 }
 
+.modal-general {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
 .modal-content {
   position: absolute;
   top: 50%;
@@ -525,7 +530,11 @@ footer {
 
 .follow-button-disabled {
   cursor: default;
-  background-color: #bbbbbb;
+  background-color: #dddddd;
+}
+
+.follow-button-disabled:hover {
+  cursor: help;
 }
 
 .submission-title {

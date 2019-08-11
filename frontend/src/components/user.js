@@ -99,6 +99,7 @@ let followButton = (res) => {
         .then((current) => {
             if (current.id == res.id) {
                 follow.disabled = true;
+                follow.innerText = "Follow disabled";
                 follow.classList.toggle("follow-button-disabled");
                 follow.title = "You can't follow yourself";
             } else {

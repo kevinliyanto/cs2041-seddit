@@ -4,7 +4,7 @@ import { convertToNow } from "./timeformat.js";
 
 let modal_errors = () => {
     let content = document.createElement("div");
-    content.className = "modal-content";
+    content.className = "modal-general modal-content";
 
     let modal_header = document.createElement("div");
     modal_header.className = "modal-header";
@@ -64,7 +64,7 @@ let modal_errors_load = (header, text) => {
 
 let modal_upvotecount = () => {
     let content = document.createElement("div");
-    content.className = "modal-content";
+    content.className = "modal-general modal-content";
 
     let modal_header = document.createElement("div");
     modal_header.className = "modal-header-style2";
@@ -95,11 +95,11 @@ let modal_upvotecount = () => {
     return content;
 }
 
-let modal_upvotecount_load = (header, data) => {
+let modal_upvotecount_load = (header, cont, arrayofuserid) => {
     let modal_header_text = document.getElementById("modal_header_text_2");
     let modal_body_text = document.getElementById("modal_body_text_2");
     modal_body_text.style.fontWeight = "bold";
-    
+
     if (modal_header_text == null || modal_body_text == null) {
         console.error("Can't find modal. This should not happen.");
     }
@@ -110,16 +110,12 @@ let modal_upvotecount_load = (header, data) => {
         modal_body_text.removeChild(modal_body_text.firstChild);
     }
     
-    let upvotecount = data.meta.upvotes.length;
+    let upvotecount = arrayofuserid.length;
 
-    if (!upvotecount) {
-        modal_body_text.innerText = "Post has no upvote";
-    } else {
-        modal_body_text.innerText = "Upvoted by:";
-    }
+    modal_body_text.innerText = cont;
 
     for (let i = 0; i < upvotecount; i++) {
-        let userid = data.meta.upvotes[i];
+        let userid = arrayofuserid[i];
         let list = document.createElement("li");
         
         getUserById(userid)
@@ -158,7 +154,7 @@ let modal_upvotecount_load = (header, data) => {
 
 let modal_comments = () => {
     let content = document.createElement("div");
-    content.className = "modal-comment";
+    content.className = "modal-general modal-comment";
 
     let modal_header = document.createElement("div");
     modal_header.className = "modal-header-style2";
@@ -221,13 +217,6 @@ let modal_comments_load = (header, data) => {
     submitbutton.innerText = "Submit";
     div2.appendChild(submitbutton);
 
-    submitbox.addEventListener('keypress', event => {
-        let key = event.keyCode;
-        if (key === 13){
-            submit();
-        }
-    });
-
     submitbutton.onclick = () => {
         submit();
     }
@@ -278,6 +267,8 @@ let modal_comments_load = (header, data) => {
     } else {
         ul.innerText = "Comments:";
     }
+
+    data.comments.sort((a, b) => b.published - a.published);
 
     for (let i = 0; i < commentcount; i++) {
         let comment = data.comments[i];

@@ -174,7 +174,9 @@ let upvoteCount = (data) => {
         votecount.onclick = () => {
             getPost(data.id)
                 .then((checkpost) => {
-                    modal_upvotecount_load("Upvotes", checkpost);
+                    let s = "Upvoted by:";
+                    if (checkpost.meta.upvotes.length == 0) s = "Post has no upvote";
+                    modal_upvotecount_load("Upvotes", s, checkpost.meta.upvotes);
                 })
                 .catch(() => {
                     console.error("Can't get upvote");
