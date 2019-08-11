@@ -15,7 +15,7 @@ body {
   padding: 0;
   background-color: var(--reddit-bg-color);
   height: 100%;
-  font-family: -apple-system, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: Tahoma, sans-serif;
 }
 
 footer {
@@ -378,9 +378,9 @@ footer {
 }
 
 .user-layout {
-  grid-template-rows: 50px 20px 20px 50px 50px;
-  grid-template-columns: 50% 50%;
-  grid-template-areas: 'user-uname''user-longdetail''user-longdetail''user-largenum''user-numeric .';
+  grid-template-rows: 50px 20px 20px 45px 45px 45px;
+  grid-template-areas: 'user-uname' 'user-longdetail' 'user-longdetail' 'user-numeric''user-numeric';
+  overflow: hidden;
   border: 2px solid var(--reddit-grey);
   margin-bottom: 10px;
 }
@@ -397,20 +397,19 @@ footer {
   padding: 5px
 }
 
-.user-largenum {
-  grid-area: user-largenum;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-areas: 'user-numeric user-numeric'
-}
-
 .user-numeric {
   grid-area: user-numeric;
   padding: 5px;
   padding-right: 10px;
   display: grid;
-  grid-template-rows: 20px 30px;
+  width: 50%;
+  grid-template-rows: 20px 25px;
   grid-template-areas: 'user-numeric-top''user-numeric-bottom'
+}
+
+.user-numeric-clickable:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .user-numeric-top {
@@ -422,7 +421,7 @@ footer {
 .user-numeric-bottom {
   grid-area: user-numeric-bottom;
   font-size: 18px;
-  font-weight: bold
+  font-weight: 100;
 }
 
 /* === MODAL === */

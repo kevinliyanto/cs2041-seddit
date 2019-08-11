@@ -12,6 +12,7 @@ import {
     checkLogged,
     getUserId
 } from "../localstorage.js";
+import { modal_upvotecount_load } from "./modal.js";
 
 
 let setFeed = () => {
@@ -38,11 +39,8 @@ let setRightUserPanel = (res) => {
     email.innerText = res.email;
     email.className = "user-longdetail";
 
-    let follow = document.createElement("div");
-    follow.className = "user-largenum";
-
     let following = document.createElement("div");
-    following.className = "user-numeric";
+    following.className = "user-numeric user-numeric-clickable";
 
     let following_top = document.createElement("div");
     following_top.className = "user-numeric-top";
@@ -77,14 +75,16 @@ let setRightUserPanel = (res) => {
     posts.appendChild(posts_top);
     posts.appendChild(posts_bottom);
 
-    follow.appendChild(following);
-    follow.appendChild(followers);
-
     mainuser.appendChild(username);
     mainuser.appendChild(name);
     mainuser.appendChild(email);
-    mainuser.appendChild(follow);
+    mainuser.appendChild(following);
+    mainuser.appendChild(followers);
     mainuser.appendChild(posts);
+    
+    following.onclick = () => {
+        modal_upvotecount_load("Following", "", res.following);
+    }
 
     return mainuser;
 }
