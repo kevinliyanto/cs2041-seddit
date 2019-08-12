@@ -34,6 +34,7 @@ import {
 import {
     subsedditPage
 } from "./components/subseddit.js";
+import { infiniteSubseddit } from "./components/infinitewall.js";
 
 // TODO
 
@@ -136,6 +137,17 @@ let routeAllSubseddit = () => {
     storeLastVisited();
 }
 
+let routeInfinite = () => {
+    if (!checkLogged()) {
+        routeLastVisited();
+        modal_errors_load("Error", "You are not logged in yet");
+        return;
+    }
+    history.replaceState(null, null, document.location.pathname + '#infinite');
+    infiniteSubseddit();
+    storeLastVisited();
+}
+
 let routeSubmit = () => {
     if (!checkLogged()) {
         routeLastVisited();
@@ -217,6 +229,9 @@ let routes = () => {
         }
     } else {
         switch (location.hash) {
+            case '#infinite':
+                routeInfinite();
+                break;
             case '#login':
             case '#signin':
                 routeLogin();
@@ -354,6 +369,7 @@ export {
     routeAllSubseddit,
     routeSubseddit,
     routeInvalid,
+    routeInfinite,
     refresh,
     routeLastVisited,
     firstRoute

@@ -1,6 +1,6 @@
 import setNavbar from "./navbar.js";
 import {
-    routeHome
+    routeHome, routeExpandedPost
 } from "../route.js";
 import {
     modal_errors_load, modalError_PushPost
@@ -107,8 +107,8 @@ let form = () => {
                     let re = /^data\:image\/png\;base64\,(.*)$/;
                     let imageb64 = reader.result.match(re)[1];
                     submitPost(title, text, sseddit, imageb64)
-                        .then(() => {
-                            routeHome();
+                        .then((res) => {
+                            routeExpandedPost(res.post_id);
                         })
                         .catch(() => {
                             modalError_PushPost();

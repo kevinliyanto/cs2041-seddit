@@ -21,8 +21,17 @@ let generatePosts = (file) => {
     for (let i = 0; i < file.posts.length; i++) {
         // console.log(file.posts[i]);
         let list = setPost(file.posts[i]);
-        if (feed != null) feed.appendChild(list);
+        if (feed != null && !duplicate(file.posts[i].id)) feed.appendChild(list);
     }
+}
+
+let duplicate = (id) => {
+    let arr = document.getElementsByClassName("post-list");
+    for (let i = 0; i < arr.length; i++) {
+        let attr = arr[i].getAttribute("data-id-post");
+        if (attr == id) return true;
+    }
+    return false;
 }
 
 let setFeed = () => {
@@ -97,10 +106,12 @@ let getter = () => {
             return;
         }
 
-        let r = document.getElementsByClassName("post-list").length - 1;
+        let r = document.getElementsByClassName("post-list").length;
         let j = 5;
 
         let done = () => {
+            if(!flag) setTimeout(done, 250);
+
             if (document.getElementsByClassName("post-list").length == 0) {
                 marker.innerText = "There is no result";
             } else {

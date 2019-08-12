@@ -11,7 +11,7 @@ import {
     routeSettings,
     refresh,
     routeSearch,
-    routeAllSubseddit
+    routeInfinite
 } from "../route.js";
 
 let right_navigation = () => {
@@ -42,9 +42,9 @@ let right_navigation = () => {
 
         let button_all = document.createElement("button");
         button_all.className = "nav-button";
-        button_all.innerText = "s/all";
+        button_all.innerText = "Infinite wall";
         button_all.onclick = () => {
-            routeAllSubseddit();
+            routeInfinite();
         }
 
         let button_newpost = document.createElement("button");

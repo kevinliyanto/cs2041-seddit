@@ -2,8 +2,7 @@ import {
     getPost,
     getUserByUsername,
     getUserById,
-    getPublic,
-    getUserFeed
+    getPublic
 } from "../requests.js";
 import {
     setPost
@@ -59,14 +58,60 @@ let setSubseddit = (subseddit) => {
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
-    getter(subseddit);
+    getPublic()
+        .then(file => file.posts)
+        .then((arr) => {
+            // console.log(arr);
+            let users = [];
+            for (let i = 0; i < arr.length; i++) {
+                users.push(arr[i].meta.author);
+            }
+            return users;
+        })
+        .then((arr) => {
+            let promises = [];
+            for (let i = 0; i < arr.length; i++) {
+                let p = getUserByUsername(arr[i])
+                    .then((res) => {
+                        return res;
+                    })
+                promises.push(p);
+            }
+            Promise.all(promises.map(p => p.catch(() => undefined)))
+                .then((users) => {
+                    let arr = [];
+                    for (let i = 0; i < users.length; i++) {
+
+                        arr.push(users[i].id);
+                    }
+                    return arr;
+                })
+                .then((userids) => {
+                    let empty = [];
+                    getter(userids, empty, subseddit);
+                });
+        })
 }
 
-let getter = (subseddit) => {
+let getter = (followed, done, subseddit) => {
+    let arr_proc = followed;
+    arr_proc.sort((a, b) => b - a);
+    // Make sure that arr_proc is unique
+    let emp = [];
+    for (let i = 0; i < arr_proc.length; i++) {
+        let app = true;
+        for (let j = 0; j < emp.length; j++) {
+            if (emp[j] == arr_proc[i]) app = false;
+        }
+        if (app) emp.push(arr_proc[i]);
+    }
+    arr_proc = emp;
+
+    let arr_done = done;
+
     let flag = true;
     let end = false;
     let lastlen = 0;
-    let p = 0;
 
     let run = () => {
         if (!flag) return;
@@ -81,8 +126,6 @@ let getter = (subseddit) => {
         }
 
         let done = () => {
-            if(!flag) setTimeout(done, 250);
-
             if (document.getElementsByClassName("post-list").length == 0) {
                 marker.innerText = "subseddit s/" + subseddit + " is not found";
             } else {
@@ -92,38 +135,28 @@ let getter = (subseddit) => {
             return;
         }
 
-        getUserFeed(p, 5)
-            .then((arr) => {
-                if (arr.posts.length == 0) done();
+        let curr = arr_proc.shift();
+        if (curr == null || curr == undefined) {
+            done();
+        }
 
-                let ret = [];
-                for (let i = 0; i < arr.posts.length; i++) {
-                    ret.push(arr.posts[i].meta.author);
-                }
-
-                let uniq = array_getuniq(ret, users);
-                users = array_join(uniq, users);
-                return uniq;
+        getUserById(curr)
+            .then((res) => {
+                generatePostsOfUser(res.posts, subseddit);
+                return res.following;
             })
-            .then((users) => {
-                let promises = [];
-                for (let i = 0; i < users.length; i++) {
-                    let p = getUserByUsername(users[i]);
-                    promises.push(p);
-                }
-                p += 5;
-                Promise.all(promises.map(p => p.catch(() => undefined)))
-                    .then((users) => {
-                        for (let i = 0; i < users.length; i++) {
-                            generatePostsOfUser(users[i].posts, subseddit);
-                        }
-                    })
+            .then((following_arr) => {
+                arr_done.push(curr);
+                let f = array_getuniq(following_arr, arr_done);
+                let r = array_join(arr_proc, f);
+                arr_proc = r;
+                flag = true;
             })
             .then(() => {
-                flag = true;
                 let diff = document.getElementsByClassName("post-list").length - lastlen;
                 lastlen = document.getElementsByClassName("post-list").length;
                 if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                    // Keep firing until it's done
                     run();
                 }
             })
@@ -134,7 +167,6 @@ let getter = (subseddit) => {
     
     run();
     let f = () => {
-        console.log(run);
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
@@ -149,7 +181,6 @@ let getter = (subseddit) => {
 }
 
 let generatePostsOfUser = (postsid, subseddit) => {
-    console.log("generating post for user: " + postsid);
     if (postsid == null) return;
     let feed = document.getElementById("feed_sub");
     if (feed == null) return;
@@ -167,18 +198,9 @@ let generatePostsOfUser = (postsid, subseddit) => {
                     // console.log("not match");
                     return;
                 }
-                if (feed != null && !duplicate(data.id)) feed.appendChild(list);
+                if (feed != null) feed.appendChild(list);
             });
     }
-}
-
-let duplicate = (id) => {
-    let arr = document.getElementsByClassName("post-list");
-    for (let i = 0; i < arr.length; i++) {
-        let attr = arr[i].getAttribute("data-id-post");
-        if (attr == id) return true;
-    }
-    return false;
 }
 
 let subsedditPage = (subseddit) => {

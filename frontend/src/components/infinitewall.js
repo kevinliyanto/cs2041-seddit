@@ -2,8 +2,7 @@ import {
     getPost,
     getUserByUsername,
     getUserById,
-    getPublic,
-    getUserFeed
+    getPublic
 } from "../requests.js";
 import {
     setPost
@@ -41,8 +40,8 @@ let setAll = () => {
     leftpanel.appendChild(feed);
 
     let marker = document.createElement("div");
-    marker.id = "marker-home";
-    marker.className = "marker-home";
+    marker.id = "marker-all";
+    marker.className = "marker-all";
     marker.innerText = "getting new posts...";
     leftpanel.appendChild(marker);
     // Generate right panel interface, similar to reddit
@@ -53,23 +52,67 @@ let setAll = () => {
     se.className = "subseddit-title";
 
     // It's/all good man
-    se.innerText = "Seddit (s/all)";
+    se.innerText = "Whole seddit";
     rightpanel.appendChild(se);
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
-    getter();
+    getPublic()
+        .then((arr) => {
+            // console.log(arr);
+            generateInitPosts(arr);
+            let users = [];
+            for (let i = 0; i < arr.posts.length; i++) {
+                users.push(arr.posts[i].meta.author);
+            }
+            return users;
+        })
+        .then((arr) => {
+            let promises = [];
+            for (let i = 0; i < arr.length; i++) {
+                let p = getUserByUsername(arr[i])
+                    .then((res) => {
+                        return res;
+                    })
+                promises.push(p);
+            }
+            Promise.all(promises.map(p => p.catch(() => undefined)))
+                .then((users) => {
+                    let arr = [];
+                    for (let i = 0; i < users.length; i++) {
+                        arr.push(users[i].id);
+                    }
+                    return arr;
+                })
+                .then((userids) => {
+                    let empty = [];
+                    getter(userids, empty);
+                });
+        })
 }
 
-let generatePosts = (file) => {
+let generateInitPosts = (file) => {
     let feed = document.getElementById("feed");
     for (let i = 0; i < file.posts.length; i++) {
-        // console.log(file.posts[i]);
         let list = setPost(file.posts[i]);
-        if (feed != null && !duplicate(file.posts[i].id)) feed.appendChild(list);
+        if (feed != null) feed.appendChild(list);
     }
 }
 
+let generatePostsOfUser = (postsid) => {
+    if (postsid == null) return;
+    let feed = document.getElementById("feed");
+    if (feed == null) return;
+
+    for (let i = 0; i < postsid.length; i++) {
+        getPost(postsid[i])
+            .then((data) => {
+                if (feed == null) return;
+                let list = setPost(data);
+                if (!duplicate(data.id)) feed.appendChild(list);
+            });
+    }
+}
 
 let duplicate = (id) => {
     let arr = document.getElementsByClassName("post-list");
@@ -114,7 +157,23 @@ let array_join = (s1, s2) => {
     return ret;
 }
 
-let getter = () => {
+let getter = (followed, done) => {
+    let arr_proc = followed;
+    arr_proc.sort((a, b) => b - a);
+    // Make sure that arr_proc is unique
+    let emp = [];
+    for (let i = 0; i < arr_proc.length; i++) {
+        let app = true;
+        for (let j = 0; j < emp.length; j++) {
+            if (emp[j] == arr_proc[i]) app = false;
+        }
+        if (app) emp.push(arr_proc[i]);
+    }
+    arr_proc = emp;
+
+    let arr_done = done;
+
+    // Instead of mutex, use flag. Safety is ensured if the flag is put in the beginning of function.
     let flag = true;
     let end = false;
     let lastlen = 0;
@@ -124,34 +183,35 @@ let getter = () => {
         if (end) return;
         flag = false;
 
-        let marker = document.getElementById("marker-home");
+        let marker = document.getElementById("marker-all");
 
         if (marker == null) {
             end = true;
             return;
         }
 
-        let r = document.getElementsByClassName("post-list").length;
-        let j = 5;
-
         let done = () => {
-            if(!flag) setTimeout(done, 250);
-            
-            if (document.getElementsByClassName("post-list").length == 0) {
-                marker.innerText = "There is no result";
-            } else {
-                marker.innerText = "You have reached bottom of the page";
-            }
+            marker.innerText = "You have reached bottom of the page";
             end = true;
             return;
         }
 
-        getUserFeed(r, j)
-            .then((file) => {
-                generatePosts(file);
-                if (file.posts.length == 0 || file.posts.length < j) {
-                    done();
-                }
+        let curr = arr_proc.shift();
+
+        if (curr == null || curr == undefined) {
+            done();
+        }
+
+        getUserById(curr)
+            .then((res) => {
+                generatePostsOfUser(res.posts);
+                return res.following;
+            })
+            .then((following_arr) => {
+                arr_done.push(curr);
+                let f = array_getuniq(following_arr, arr_done);
+                let r = array_join(arr_proc, f);
+                arr_proc = r;
                 flag = true;
             })
             .then(() => {
@@ -164,16 +224,14 @@ let getter = () => {
             .catch(() => {
                 flag = true;
             });
-
     }
-
-    run();
+    
     let f = () => {
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
         }
-        let marker = document.getElementById("marker-home");
+        let marker = document.getElementById("marker-all");
         if (marker == null || end) {
             window.removeEventListener("scroll", f);
         }
@@ -182,14 +240,12 @@ let getter = () => {
     window.addEventListener("scroll", f);
 }
 
-let allSubseddit = () => {
+let infiniteSubseddit = () => {
     setNavbar();
     setAll();
     setBackButton();
 }
 
 export {
-    array_getuniq,
-    array_join,
-    allSubseddit
+    infiniteSubseddit
 }

@@ -10,7 +10,7 @@ import {
     setPost
 } from "./singlepost.js";
 import {
-    routeSubseddit
+    routeSubseddit, routeAllSubseddit
 } from "../route.js";
 
 
@@ -92,7 +92,7 @@ let setSearchBar = (string) => {
     let text2 = document.createElement("a");
     text2.innerText = "Search specific subseddit (go to subseddit)";
     text2.style.cursor = "default";
-    
+
     tickbox.onclick = () => {
         if (tickbox.checked) {
             text.innerText = "s/ ";
@@ -175,7 +175,11 @@ let setSearch = (string) => {
     let text = document.createElement("h4");
     text.innerText = "Search for";
     let text2 = document.createElement("h5");
-    text2.innerText = "string";
+    if (string == null || string == "") {
+        text2.innerText = "something inside seddit..."
+    } else {
+        text2.innerText = string;
+    }
     detail.appendChild(text);
     detail.appendChild(text2);
     rightpanel.appendChild(detail);
@@ -205,10 +209,10 @@ let getter = (string) => {
 
     // Cleanup all feed child
     let feed = document.getElementById("feed");
-    while(feed.firstChild){
+    while (feed.firstChild) {
         feed.removeChild(feed.firstChild);
     }
-    
+
     let marker = document.getElementById("marker-search");
     if (marker != null) {
         marker.innerText = "getting posts...";
@@ -231,6 +235,8 @@ let getter = (string) => {
         }
 
         let done = () => {
+            if (!flag) setTimeout(done, 250);
+
             if (document.getElementsByClassName("post-list").length == 0) {
                 marker.innerText = "there doesn't seem to be anything here";
             } else {
