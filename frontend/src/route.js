@@ -26,6 +26,7 @@ import {
     settingPage
 } from "./components/settings.js";
 import { allSubseddit } from "./components/allsubseddit.js";
+import { searchPage } from "./components/search.js";
 
 // TODO
 
@@ -139,6 +140,11 @@ let routeSubmit = () => {
     storeLastVisited();
 }
 
+let routeSearch = (string) => {
+    history.replaceState(null, null, document.location.pathname + '#search=' + string);
+    searchPage(string);
+}
+
 let routeSubseddit = (subseddit) => {
     if (subseddit == "all") {
         routeAllSubseddit();
@@ -213,6 +219,10 @@ let routes = () => {
                     let re = /^#feed\=(\d+)\/edit\/?$/;
                     let p = location.hash.match(re);
                     routeEditPost(p[1]);
+                } else if (checkHashSearch(location.hash)) {
+                    let re = /^#search\=(\w+)$/;
+                    let p = location.hash.match(re);
+                    routeSearch(p[1]);
                 } else {
                     routeInvalid();
                 }
@@ -265,6 +275,11 @@ let checkHashFeedEdit = (hash) => {
     return re.test(hash);
 }
 
+let checkHashSearch = (hash) => {
+    let re = /^#search\=\w+$/;
+    return re.test(hash);
+}
+
 let initHashListener = () => {
     window.addEventListener("hashchange", (event) => {
         routes();
@@ -285,6 +300,7 @@ export {
     routeEditPost,
     routeSettings,
     routeSubmit,
+    routeSearch,
     routeSubseddit,
     routeInvalid,
     refresh,

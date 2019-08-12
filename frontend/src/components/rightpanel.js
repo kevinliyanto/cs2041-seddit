@@ -9,7 +9,8 @@ import {
     routeLogin,
     routeSignup,
     routeSettings,
-    refresh
+    refresh,
+    routeSearch
 } from "../route.js";
 
 let right_navigation = () => {
@@ -70,7 +71,8 @@ let right_navigation = () => {
         search.addEventListener('keypress', event => {
             let key = event.keyCode;
             if (key === 13) {
-                searchSeddit(search.value);
+                if (search.value.length != 0)
+                    routeSearch(search.value);
             }
         });
 
@@ -105,11 +107,6 @@ let right_welcome = () => {
 
 }
 
-let searchSeddit = (string) => {
-    console.log(string);
-}
-
 export {
-    searchSeddit,
     right_navigation
 };

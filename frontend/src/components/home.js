@@ -66,8 +66,8 @@ let setMainHome = () => {
         getUserFeed(0, 10)
             .then((file) => {
                 generatePosts(file);
+                getter();
             });
-        getter();
     } else {
         getPublic().then(file => generatePosts(file));
     }
@@ -90,7 +90,7 @@ let getter = () => {
             marker.innerText = "getting new posts...";
             
             let r = document.getElementsByClassName("post-list").length - 1;
-            let j = 5;
+            let j = 10;
             getUserFeed(r, j)
                 .then((file) => {
                     let done = () => {
@@ -115,6 +115,7 @@ let getter = () => {
                     generatePosts(file);
                 })
                 .catch(() => {
+                    clearTimeout(t);
                 });
         }
         t = setTimeout(run, 400);

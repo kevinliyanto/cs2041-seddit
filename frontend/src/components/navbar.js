@@ -1,5 +1,5 @@
 import { checkLogged, getUsername, clearCreds } from "../localstorage.js";
-import { routeLogin, routeHome, routeSignup, routeUser, routeSettings } from "../route.js";
+import { routeLogin, routeHome, routeSignup, routeUser, routeSettings, routeSearch } from "../route.js";
 
 function searchBar() {
     let search = document.createElement("input");
@@ -103,6 +103,15 @@ let generateNavlistPrivate = () => {
     list_2.className = "nav-item";
 
     let search = searchBar();
+    search.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13) {
+            if (search.value.length != 0)
+                routeSearch(search.value);
+            
+            event.currentTarget.value = "";
+        }
+    });
     list_0.appendChild(search);
 
     let a1 = document.createElement("a");
