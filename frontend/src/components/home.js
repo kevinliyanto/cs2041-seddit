@@ -83,6 +83,7 @@ let setMainHome = () => {
 let getter = () => {
     let flag = true;
     let end = false;
+    let lastlen = 0;
 
     let run = () => {
         if (!flag) return;
@@ -97,7 +98,7 @@ let getter = () => {
         }
 
         let r = document.getElementsByClassName("post-list").length - 1;
-        let j = 10;
+        let j = 5;
 
         let done = () => {
             if (document.getElementsByClassName("post-list").length == 0) {
@@ -115,9 +116,14 @@ let getter = () => {
                 if (file.posts.length == 0 || file.posts.length < j) {
                     done();
                 }
+                flag = true;
             })
             .then(() => {
-                flag = true;
+                let diff = document.getElementsByClassName("post-list").length - lastlen;
+                lastlen = document.getElementsByClassName("post-list").length;
+                if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                    run();
+                }
             })
             .catch(() => {
                 flag = true;
@@ -126,7 +132,6 @@ let getter = () => {
     }
 
     let f = () => {
-        console.log("run");
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();

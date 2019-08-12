@@ -1,5 +1,6 @@
 import {
-    right_navigation, setBackButton
+    right_navigation,
+    setBackButton
 } from "./rightpanel.js";
 import setNavbar from "./navbar.js";
 import {
@@ -8,7 +9,9 @@ import {
 import {
     setPost
 } from "./singlepost.js";
-import { routeSubseddit } from "../route.js";
+import {
+    routeSubseddit
+} from "../route.js";
 
 
 // Just regex everything loool
@@ -93,64 +96,82 @@ let setSearch = (string) => {
 
     main.appendChild(leftpanel);
 
-    let detail = document.createElement("h2");
-    detail.innerText = "Search for \"" + string + "\"";
+
+    let detail = document.createElement("div");
+    detail.className = "subseddit-welcome";
+    let text = document.createElement("h4");
+    text.innerText = "Search for";
+    let text2 = document.createElement("h5");
+    text2.innerText = "string";
+    detail.appendChild(text);
+    detail.appendChild(text2);
     rightpanel.appendChild(detail);
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
-    getUserFeed(0, 10)
-        .then((file) => {
-            generatePosts(file, string);
-            getter(string);
-        });
+    getter(string);
 }
 
 let getter = (string) => {
+    let flag = true;
+    let end = false;
+    let i = 0;
     let lastlen = 0;
 
-    let f = 10;
     let run = () => {
-        let t = 0;
-        // console.log("run");
-        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        // console.log(h);
-        // console.log(window.scrollY + window.innerHeight);
-        if ((h - 120 < window.scrollY + window.innerHeight)) {
-            let marker = document.getElementById("marker");
+        if (!flag) return;
+        if (end) return;
+        flag = false;
 
-            if (marker == null) {
-                clearTimeout(t);
-            }
+        let marker = document.getElementById("marker");
 
-            let done = () => {
-                if (document.getElementsByClassName("post-list").length == 0) {
-                    marker.innerText = "There is no result";
-                } else {
-                    marker.innerText = "You have reached bottom of the page";
-                }
-                clearTimeout(t);
-            }
-            
-            let j = 10;
-            getUserFeed(f, j)
-                .then((file) => {
-                    if (file.posts.length == 0 || lastlen == f) {
-                        done();
-                        return;
-                    }
-                    generatePosts(file, string);
-                    f += j;
-                    lastlen = document.getElementsByClassName("post-list").length;
-                })
-                .catch(() => {
-                    clearTimeout(t);
-                });
+        if (marker == null) {
+            end = true;
+            return;
         }
-        t = setTimeout(run, 300);
+
+        let done = () => {
+            marker.innerText = "You have reached bottom of the page";
+            end = true;
+            return;
+        }
+
+        let j = 5;
+        getUserFeed(i, j)
+            .then((file) => {
+                if (file.posts.length == 0) {
+                    done();
+                    return;
+                }
+                generatePosts(file, string);
+                i += j;
+                flag = true;
+            })
+            .then(() => {
+                let diff = document.getElementsByClassName("post-list").length - lastlen;
+                lastlen = document.getElementsByClassName("post-list").length;
+                if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                    run();
+                }
+            })
+            .catch(() => {
+                flag = true;
+            });
     }
 
-    setTimeout(run, 300);
+    run();
+    let f = () => {
+        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        if ((h - 120 < window.scrollY + window.innerHeight)) {
+            run();
+        }
+        let marker = document.getElementById("marker");
+        if (marker == null || end) {
+            window.removeEventListener("scroll", f);
+        }
+    };
+
+    window.addEventListener("scroll", f);
 }
 
 let searchPage = (string) => {

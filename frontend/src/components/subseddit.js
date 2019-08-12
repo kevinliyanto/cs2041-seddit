@@ -12,9 +12,6 @@ import {
     right_navigation, setBackButton
 } from "./rightpanel.js";
 import {
-    Lock
-} from "./Mutex.js";
-import {
     array_getuniq,
     array_join
 } from "./allsubseddit.js";
@@ -112,66 +109,71 @@ let getter = (followed, done, subseddit) => {
 
     let arr_done = done;
 
-    let lock = new Lock();
+    let flag = true;
+    let end = false;
+    let lastlen = 0;
 
     let run = () => {
-        let t = 0;
-        // console.log(arr_proc);
-        // console.log(arr_done);
-        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        if ((h - 400 < window.scrollY + window.innerHeight)) {
-            let marker = document.getElementById("marker");
+        if (!flag) return;
+        if (end) return;
+        flag = false;
 
-            if (marker == null) {
-                clearTimeout(t);
-            }
+        let marker = document.getElementById("marker");
 
-            // Produces unsorted feed
-            let curr = arr_proc.shift();
-
-            let done = () => {
-                if (marker != null) {
-                    if (document.getElementsByClassName("post-list").length == 0) {
-                        marker.innerText = "There is no result";
-                    } else {
-                        marker.innerText = "You have reached bottom of the page";
-                    }
-                }
-                lock.release();
-                clearTimeout(t);
-                return;
-            }
-
-            if (curr == null) {
-                done();
-            }
-
-            getUserById(curr)
-                .then((res) => {
-                    if (marker == null) {
-                        done();
-                    }
-                    generatePostsOfUser(res.posts, subseddit);
-                    arr_done.push(curr);
-
-                    lock.hold(() => {
-                        let f = array_getuniq(res.following, arr_done);
-                        let r = array_join(arr_proc, f);
-                        arr_proc = r;
-                        lock.release();
-                    })
-
-                })
-                .catch(() => {
-                    // Avoid deadlock
-                    clearTimeout(t);
-                    lock.release();
-                });
+        if (marker == null) {
+            end = true;
+            return;
         }
-        t = setTimeout(run, 500);
-    }
 
-    setTimeout(run, 300);
+        let done = () => {
+            marker.innerText = "You have reached bottom of the page";
+            end = true;
+            return;
+        }
+
+        let curr = arr_proc.shift();
+        if (curr == null || curr == undefined) {
+            done();
+        }
+
+        getUserById(curr)
+            .then((res) => {
+                generatePostsOfUser(res.posts, subseddit);
+                return res.following;
+            })
+            .then((following_arr) => {
+                arr_done.push(curr);
+                let f = array_getuniq(following_arr, arr_done);
+                let r = array_join(arr_proc, f);
+                arr_proc = r;
+                flag = true;
+            })
+            .then(() => {
+                let diff = document.getElementsByClassName("post-list").length - lastlen;
+                lastlen = document.getElementsByClassName("post-list").length;
+                if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                    // Keep firing until it's done
+                    run();
+                }
+            })
+            .catch(() => {
+                flag = true;
+            });
+    }
+    
+    run();
+    let f = () => {
+        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        if ((h - 120 < window.scrollY + window.innerHeight)) {
+            run();
+        }
+        let marker = document.getElementById("marker");
+        if (marker == null || end) {
+            window.removeEventListener("scroll", f);
+        }
+    };
+
+    window.addEventListener("scroll", f);
 }
 
 let generatePostsOfUser = (postsid, subseddit) => {

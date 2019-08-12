@@ -176,6 +176,7 @@ let getter = (followed, done) => {
     // Instead of mutex, use flag. Safety is ensured if the flag is put in the beginning of function.
     let flag = true;
     let end = false;
+    let lastlen = 0;
 
     let run = () => {
         console.log(arr_proc);
@@ -199,7 +200,7 @@ let getter = (followed, done) => {
 
         let curr = arr_proc.shift();
 
-        if (curr == null) {
+        if (curr == null || curr == undefined) {
             done();
         }
 
@@ -215,13 +216,19 @@ let getter = (followed, done) => {
                 arr_proc = r;
                 flag = true;
             })
+            .then(() => {
+                let diff = document.getElementsByClassName("post-list").length - lastlen;
+                lastlen = document.getElementsByClassName("post-list").length;
+                if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                    run();
+                }
+            })
             .catch(() => {
                 flag = true;
             });
     }
     
     let f = () => {
-        console.log("run");
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();

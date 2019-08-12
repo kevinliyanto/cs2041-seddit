@@ -289,10 +289,12 @@ function getUser(username, id) {
 }
 
 function getUserByUsername(username) {
+    if (username == undefined || username == null) throw new Error();
     return getUser(username, "");
 }
 
 function getUserById(id) {
+    if (id == undefined || id == null) throw new Error();
     return getUser("", id);
 }
 
