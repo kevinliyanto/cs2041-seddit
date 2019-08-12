@@ -68,6 +68,75 @@ let setFeed = () => {
     return feed;
 }
 
+let setSearchBar = (string) => {
+    let div = document.createElement("div");
+    div.className = "form";
+
+    let details = document.createElement("h3");
+    details.innerText = "Search";
+    div.appendChild(details);
+
+    let div2 = document.createElement("div");
+    let text = document.createElement("a");
+    text.style.fontWeight = "bold";
+    let searchfield = document.createElement("input");
+    searchfield.className = "submission-search";
+    searchfield.placeholder = "Search for post";
+    searchfield.value = string;
+    div2.appendChild(text);
+    div2.appendChild(searchfield);
+
+    let div3 = document.createElement("div");
+    let tickbox = document.createElement("input");
+    tickbox.type = "checkbox";
+    let text2 = document.createElement("a");
+    text2.innerText = "Search specific subseddit (go to subseddit)";
+    text2.style.cursor = "default";
+    
+    tickbox.onclick = () => {
+        if (tickbox.checked) {
+            text.innerText = "s/ ";
+        } else {
+            text.innerText = "";
+        }
+    }
+    div3.appendChild(tickbox);
+    div3.appendChild(text2);
+
+    let div4 = document.createElement("div");
+    let submit = document.createElement("button");
+    submit.className = "submit-button-2";
+    submit.innerText = "Search";
+    div4.appendChild(submit);
+
+    searchfield.addEventListener('keypress', event => {
+        let key = event.keyCode;
+        if (key === 13) {
+            if (searchfield.value.length == 0) return;
+            if (tickbox.checked) {
+                getter("s/" + searchfield.value);
+            } else {
+                getter(searchfield.value);
+            }
+        }
+    });
+
+    submit.onclick = () => {
+        if (searchfield.value.length == 0) return;
+        if (tickbox.checked) {
+            getter("s/" + searchfield.value);
+        } else {
+            getter(searchfield.value);
+        }
+    }
+
+    div.appendChild(div2);
+    div.appendChild(div3);
+    div.appendChild(div4);
+
+    return div;
+}
+
 let setSearch = (string) => {
     let main = document.getElementById("main");
     // Cleanup main
@@ -82,20 +151,24 @@ let setSearch = (string) => {
     rightpanel.id = "rightpanel";
     rightpanel.className = "rightpanel";
 
+    let searchBar = setSearchBar(string);
+    leftpanel.appendChild(searchBar);
+
     // Generate feed interface
     let feed = setFeed();
     leftpanel.appendChild(feed);
 
     let marker = document.createElement("div");
-    marker.id = "marker";
-    marker.className = "marker";
-    marker.innerText = "getting posts...";
+    marker.id = "marker-search";
+    marker.className = "marker-search";
+    if (string != "") {
+        marker.innerText = "getting posts...";
+    }
     leftpanel.appendChild(marker);
 
     // Generate right panel interface, similar to reddit
 
     main.appendChild(leftpanel);
-
 
     let detail = document.createElement("div");
     detail.className = "subseddit-welcome";
@@ -109,10 +182,38 @@ let setSearch = (string) => {
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
-    getter(string);
+    if (string != "") {
+        getter(string);
+    }
 }
 
 let getter = (string) => {
+    // Check string matching
+    let re = /^\/?s\/\:?(\w+)\/?$/;
+    let p = string.match(re);
+    if (p != null) {
+        switch (p[1]) {
+            case "all":
+                routeAllSubseddit();
+                break;
+            default:
+                routeSubseddit(p[1]);
+                break;
+        }
+        return;
+    }
+
+    // Cleanup all feed child
+    let feed = document.getElementById("feed");
+    while(feed.firstChild){
+        feed.removeChild(feed.firstChild);
+    }
+    
+    let marker = document.getElementById("marker-search");
+    if (marker != null) {
+        marker.innerText = "getting posts...";
+    }
+
     let flag = true;
     let end = false;
     let i = 0;
@@ -123,7 +224,6 @@ let getter = (string) => {
         if (end) return;
         flag = false;
 
-        let marker = document.getElementById("marker");
 
         if (marker == null) {
             end = true;
@@ -169,7 +269,7 @@ let getter = (string) => {
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
         }
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-search");
         if (marker == null || end) {
             window.removeEventListener("scroll", f);
         }

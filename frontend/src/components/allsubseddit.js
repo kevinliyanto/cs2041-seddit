@@ -40,8 +40,8 @@ let setAll = () => {
     leftpanel.appendChild(feed);
 
     let marker = document.createElement("div");
-    marker.id = "marker";
-    marker.className = "marker";
+    marker.id = "marker-all";
+    marker.className = "marker-all";
     marker.innerText = "getting new posts...";
     leftpanel.appendChild(marker);
     // Generate right panel interface, similar to reddit
@@ -185,7 +185,7 @@ let getter = (followed, done) => {
         if (end) return;
         flag = false;
 
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-all");
 
         if (marker == null) {
             end = true;
@@ -233,7 +233,7 @@ let getter = (followed, done) => {
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
         }
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-all");
         if (marker == null || end) {
             window.removeEventListener("scroll", f);
         }

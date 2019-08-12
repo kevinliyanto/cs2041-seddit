@@ -32,15 +32,14 @@ let right_navigation = () => {
     }
     all.appendChild(button_home);
 
-    let button_refresh = document.createElement("button");
-    button_refresh.className = "nav-button";
-    button_refresh.innerText = "Refresh page";
-    button_refresh.onclick = () => {
-        refresh();
-    }
-    all.appendChild(button_refresh);
-
     if (checkLogged()) {
+        let button_search = document.createElement("button");
+        button_search.className = "nav-button";
+        button_search.innerText = "Search";
+        button_search.onclick = () => {
+            routeSearch("");
+        }
+
         let button_all = document.createElement("button");
         button_all.className = "nav-button";
         button_all.innerText = "s/all";
@@ -56,26 +55,27 @@ let right_navigation = () => {
         }
 
         let button_user = document.createElement("button");
-        button_user.className = "nav-button";
+        button_user.className = "nav-button nav-button-2";
         button_user.innerText = "Profile";
         button_user.onclick = () => {
             routeUser(getUsername());
         }
 
         let button_setting = document.createElement("button");
-        button_setting.className = "nav-button";
+        button_setting.className = "nav-button nav-button-2";
         button_setting.innerText = "User Setting";
         button_setting.onclick = () => {
             routeSettings();
         }
 
+        all.appendChild(button_search);
         all.appendChild(button_all);
         all.appendChild(button_newpost);
         all.appendChild(button_user);
         all.appendChild(button_setting);
 
         let search = document.createElement("input");
-        search.placeholder = "Search Seddit";
+        search.placeholder = "Quick search";
         search.className = "nav-search";
         search.addEventListener('keypress', event => {
             let key = event.keyCode;
@@ -106,6 +106,14 @@ let right_navigation = () => {
         all.appendChild(login);
         all.appendChild(signup);
     }
+
+    let button_refresh = document.createElement("button");
+    button_refresh.className = "nav-button nav-button-2";
+    button_refresh.innerText = "Refresh page";
+    button_refresh.onclick = () => {
+        refresh();
+    }
+    all.appendChild(button_refresh);
 
     return all;
 }

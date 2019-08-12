@@ -42,8 +42,8 @@ let setSubseddit = (subseddit) => {
     leftpanel.appendChild(feed);
 
     let marker = document.createElement("div");
-    marker.id = "marker";
-    marker.className = "marker";
+    marker.id = "marker-sub";
+    marker.className = "marker-sub";
     marker.innerText = "getting posts...";
     leftpanel.appendChild(marker);
 
@@ -118,7 +118,7 @@ let getter = (followed, done, subseddit) => {
         if (end) return;
         flag = false;
 
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-sub");
 
         if (marker == null) {
             end = true;
@@ -171,7 +171,7 @@ let getter = (followed, done, subseddit) => {
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
         }
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-sub");
         if (marker == null || end) {
             window.removeEventListener("scroll", f);
         }

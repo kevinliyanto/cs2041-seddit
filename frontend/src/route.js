@@ -154,22 +154,26 @@ let routeSearch = (string) => {
         return;
     }
 
-    // if string has a leading s/ or /s/, it's a subseddit
-    let re = /^\/?s\/\:?(\w+)\/?$/;
-    let p = string.match(re);
-    if (p != null) {
-        switch (p[1]) {
-            case "all":
-                routeAllSubseddit();
-                break;
-            default:
-                routeSubseddit(p[1]);
-                break;
+    if (string != null && string != "") {
+        // if string has a leading s/ or /s/, it's a subseddit
+        let re = /^\/?s\/\:?(\w+)\/?$/;
+        let p = string.match(re);
+        if (p != null) {
+            switch (p[1]) {
+                case "all":
+                    routeAllSubseddit();
+                    break;
+                default:
+                    routeSubseddit(p[1]);
+                    break;
+            }
+            return;
         }
-        return;
+        history.replaceState(null, null, document.location.pathname + '#search=' + string);
+    } else {
+        history.replaceState(null, null, document.location.pathname + '#search');
     }
 
-    history.replaceState(null, null, document.location.pathname + '#search=' + string);
     searchPage(string);
     storeLastVisited();
 }
@@ -235,6 +239,11 @@ let routes = () => {
                 break;
             case '#s/all':
                 routeAllSubseddit();
+                break;
+            case '#search':
+                // Added for regex security
+            case '#search=':
+                routeSearch("");
                 break;
             default:
                 // Check hash if it has the valid tags: /#s/ or /#u/ 

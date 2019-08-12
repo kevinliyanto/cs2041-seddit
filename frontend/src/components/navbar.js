@@ -5,7 +5,7 @@ function searchBar() {
     let search = document.createElement("input");
     search.id = "search";
     search.setAttribute("data-id-search", "");
-    search.placeholder = "Search Seddit";
+    search.placeholder = "Quick search";
     search.type = "search";
     return search;
 }

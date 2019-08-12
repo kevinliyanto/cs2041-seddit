@@ -51,8 +51,8 @@ let setMainHome = () => {
     leftpanel.appendChild(feed);
 
     let marker = document.createElement("div");
-    marker.id = "marker";
-    marker.className = "marker";
+    marker.id = "marker-home";
+    marker.className = "marker-home";
     marker.innerText = "getting new posts...";
     leftpanel.appendChild(marker);
 
@@ -90,7 +90,7 @@ let getter = () => {
         if (end) return;
         flag = false;
 
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-home");
 
         if (marker == null) {
             end = true;
@@ -136,7 +136,7 @@ let getter = () => {
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();
         }
-        let marker = document.getElementById("marker");
+        let marker = document.getElementById("marker-home");
         if (marker == null || end) {
             window.removeEventListener("scroll", f);
         }

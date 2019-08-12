@@ -766,6 +766,12 @@ h3 {
   cursor: pointer;
 }
 
+.nav-button-2 {
+  border-color: #2978a7;
+  background-color: white;
+  color: rgb(0, 0, 0);
+}
+
 .nav-search {
   background-color: #2979a750;
   font: inherit;
@@ -809,7 +815,9 @@ h3 {
   padding: 0;
 }
 
-
+.marker-search,
+.marker-sub,
+.marker-all,
 .marker {
   height: 40px;
   text-align: center;
@@ -888,4 +896,15 @@ h3 {
 
 .sedditlogin:hover {
   cursor: pointer;
+}
+
+label {
+  margin: 4px;
+}
+
+.submission-search {
+  width: 85%;
+  border: 2px solid;
+  border-radius: 5px;
+  padding: 6px 12px;
 }
