@@ -126,7 +126,11 @@ let getter = (followed, done, subseddit) => {
         }
 
         let done = () => {
-            marker.innerText = "You have reached bottom of the page";
+            if (document.getElementsByClassName("post-list").length == 0) {
+                marker.innerText = "subseddit s/" + subseddit + " is not found";
+            } else {
+                marker.innerText = "You have reached bottom of the page";
+            }
             end = true;
             return;
         }

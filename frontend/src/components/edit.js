@@ -60,13 +60,26 @@ let form = (data) => {
     div6.className = "submission";
     formdiv.appendChild(div6);
     
-    let div7 = document.createElement("div");
+    let reset = document.createElement("button");
+    reset.className = "submit-button";
+    reset.innerText = "Reset all field";
+    div6.appendChild(reset);
+    // div7.className = "submission";
+    // formdiv.appendChild(div7);
+
+    reset.onclick = () => {
+        titleField.value = data.title;
+        textField.value = data.text;
+        image.value = "";
+    }
+
+    let div8 = document.createElement("div");
     let cancel = document.createElement("button");
-    cancel.className = "submit-button";
+    cancel.className = "button button-home";
     cancel.innerText = "Cancel submission";
-    div7.appendChild(cancel);
-    div7.className = "submission";
-    formdiv.appendChild(div7);
+    div8.appendChild(cancel);
+    div8.className = "submission";
+    formdiv.appendChild(div8);
 
     submit.onclick = () => {
         let title = titleField.value;

@@ -131,7 +131,11 @@ let getter = (string) => {
         }
 
         let done = () => {
-            marker.innerText = "You have reached bottom of the page";
+            if (document.getElementsByClassName("post-list").length == 0) {
+                marker.innerText = "there doesn't seem to be anything here";
+            } else {
+                marker.innerText = "You have reached bottom of the page";
+            }
             end = true;
             return;
         }

@@ -192,13 +192,13 @@ h3 {
   border: 1px solid;
   border-color: #FF5700;
   border-radius: 4px;
-  margin-top: 5px;
   text-transform: uppercase;
   padding: 7.5px 18px;
   font-weight: bold;
   background-color: #FF5700;
   color: #eee8e8;
   margin-top: 4px;
+  margin-right: 6px;
 }
 
 .submit-button:hover {
@@ -214,13 +214,13 @@ h3 {
   border: 1px solid;
   border-color: #0079D3;
   border-radius: 4px;
-  margin-top: 5px;
   text-transform: uppercase;
   padding: 7.5px 18px;
   font-weight: bold;
   background-color: #0079D3;
   color: #eee8e8;
   margin-top: 4px;
+  margin-right: 6px;
 }
 
 .submit-button-2:hover {
@@ -856,8 +856,10 @@ h3 {
 .button-back {
   display: none;
   position: fixed;
-  bottom: 0; 
-  width: 100%;
+  bottom: 0;
+  right: 5%;
+  width: 150px;
+  height: 40px;
   border: none; 
   outline: none; 
   background-color: blue;
@@ -866,6 +868,7 @@ h3 {
   padding: 5px;
   border-radius: 10px 10px 0 0; 
   font-size: 18px;
+  font-weight: bold;
 }
 
 .button-back:hover {

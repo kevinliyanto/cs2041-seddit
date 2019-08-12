@@ -25,9 +25,15 @@ import {
 import {
     settingPage
 } from "./components/settings.js";
-import { allSubseddit } from "./components/allsubseddit.js";
-import { searchPage } from "./components/search.js";
-import { subsedditPage } from "./components/subseddit.js";
+import {
+    allSubseddit
+} from "./components/allsubseddit.js";
+import {
+    searchPage
+} from "./components/search.js";
+import {
+    subsedditPage
+} from "./components/subseddit.js";
 
 // TODO
 
@@ -151,7 +157,7 @@ let routeSearch = (string) => {
     // if string has a leading s/ or /s/, it's a subseddit
     let re = /^\/?s\/\:?(\w+)\/?$/;
     let p = string.match(re);
-    if (p != null){
+    if (p != null) {
         switch (p[1]) {
             case "all":
                 routeAllSubseddit();
@@ -188,9 +194,11 @@ let routes = () => {
     if (!checkLogged()) {
         switch (location.hash) {
             case '#login':
+            case '#signin':
                 routeLogin();
                 break;
             case '#signup':
+            case '#register':
                 routeSignup();
                 break;
             case '#home':
@@ -206,9 +214,11 @@ let routes = () => {
     } else {
         switch (location.hash) {
             case '#login':
+            case '#signin':
                 routeLogin();
                 break;
             case '#signup':
+            case '#register':
                 routeSignup();
                 break;
             case '#home':
