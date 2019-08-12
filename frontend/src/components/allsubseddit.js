@@ -1,7 +1,8 @@
 import {
     getPost,
     getUserByUsername,
-    getUserById
+    getUserById,
+    getPublic
 } from "../requests.js";
 import {
     setPost
@@ -13,6 +14,9 @@ import {
 import {
     getUsername
 } from "../localstorage.js";
+import {
+    Lock
+} from "./Mutex.js";
 
 let setFeed = () => {
     let feed = document.createElement("ul");
@@ -48,17 +52,45 @@ let setAll = () => {
 
     main.appendChild(leftpanel);
 
-
+    let subseddit = document.createElement("h2");
+    subseddit.innerText = "s/all";
+    rightpanel.appendChild(subseddit);
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
-    getUserByUsername(getUsername())
-        .then((file) => {
-            generatePostsOfUser(file.posts)
-            let arr = [];
-            arr.push(file.id);
-            getter(file.following, arr);
-        });
+    getPublic()
+        .then(file => file.posts)
+        .then((arr) => {
+            // console.log(arr);
+            let users = [];
+            for (let i = 0; i < arr.length; i++) {
+                users.push(arr[i].meta.author);
+            }
+            return users;
+        })
+        .then((arr) => {
+            let promises = [];
+            for (let i = 0; i < arr.length; i++) {
+                let p = getUserByUsername(arr[i])
+                    .then((res) => {
+                        return res;
+                    })
+                promises.push(p);
+            }
+            Promise.all(promises.map(p => p.catch(() => undefined)))
+                .then((users) => {
+                    let arr = [];
+                    for (let i = 0; i < users.length; i++) {
+
+                        arr.push(users[i].id);
+                    }
+                    return arr;
+                })
+                .then((userids) => {
+                    let empty = [];
+                    getter(userids, empty);
+                });
+        })
 }
 
 let generatePostsOfUser = (postsid) => {
@@ -110,61 +142,87 @@ let join = (s1, s2) => {
 
 let getter = (followed, done) => {
     let arr_proc = followed;
+    arr_proc.sort((a, b) => b - a);
+    // Make sure that arr_proc is unique
+    let emp = [];
+    for (let i = 0; i < arr_proc.length; i++){
+        let app = true;
+        for (let j = 0; j < emp.length; j++) {
+            if (emp[j] == arr_proc[i]) app = false;
+        }
+        if (app) emp.push(arr_proc[i]);
+    }
+    arr_proc = emp;
+
     let arr_done = done;
+
+    let lock = new Lock();
     let t = 0;
 
+
+    // Make three array
+    // Two same array and new empty called buffer
+    // Process arr_proc one by one
+    // current arr_proc will deposit its content into buffer (obv after checking itself and arr_done)
+    // When current arr_proc is done, put into arr_done
+    // When arr_proc is empty, check buffer
+    // If empty, clear timeout
+    // If not empty, move buffer into arr_proc
+
     let run = () => {
-        console.log(arr_proc);
-        console.log(arr_done);
+        // console.log(arr_proc);
+        // console.log(arr_done);
 
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        if ((h - 120 < window.scrollY + window.innerHeight)) {
+        if ((h - 400 < window.scrollY + window.innerHeight)) {
             let marker = document.getElementById("marker");
-            marker.innerText = "getting new posts...";
 
-            let promises = [];
-            for (let i = 0; i < arr_proc.length; i++) {
-                // console.log(arr_proc[i]);
-                let r = getUserById(arr_proc[i])
-                    .then((res) => {
-                        return res
-                    });
-                promises.push(r);
+            if (marker == null) {
+                clearTimeout(t);
             }
 
-            let s = join(arr_done, arr_proc);
-            arr_done = s;
-            arr_proc = [];
+            marker.innerText = "getting new posts...";
 
-            Promise.all(promises.map(p => p.catch(() => undefined)))
+            // Produces unsorted feed
+            let curr = arr_proc.shift();
+
+            if (curr == null) {
+                marker.innerText = "You have reached bottom of the page\n\n";
+
+                let button = document.createElement("button");
+                button.innerText = "Back to top";
+                button.className = "button button-secondary";
+
+                button.onclick = () => {
+                    window.scrollTo(0, 0);
+                }
+
+                marker.appendChild(button);
+                lock.release();
+                clearTimeout(t);
+            }
+
+            getUserById(curr)
                 .then((res) => {
-                    for (let i = 0; i < res.length; i++) {
-                        generatePostsOfUser(res[i].posts);
-                        let f = removeDuplicate(res[i].following, arr_done);
+                    generatePostsOfUser(res.posts);
+                    arr_done.push(curr);
+                    
+                    lock.hold(() => {
+                        let f = removeDuplicate(res.following, arr_done);
                         let r = join(arr_proc, f);
                         arr_proc = r;
+                        lock.release();
+                    })
 
-                        if (arr_proc.length == 0) {
-                            marker.innerText = "You have reached bottom of the page\n\n";
-            
-                            let button = document.createElement("button");
-                            button.innerText = "Back to top";
-                            button.className = "button button-secondary";
-            
-                            button.onclick = () => {
-                                window.scrollTo(0, 0);
-                            }
-            
-                            marker.appendChild(button);
-                            clearTimeout(t);
-                        }
-                    }
+                })
+                .catch(() => {
+                    // Avoid deadlock
                 });
         }
-        t = setTimeout(run, 2000);
+        t = setTimeout(run, 100);
     }
 
-    setTimeout(run, 1000);
+    setTimeout(run, 400);
 }
 
 let allSubseddit = () => {

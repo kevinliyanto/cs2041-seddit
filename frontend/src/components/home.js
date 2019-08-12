@@ -82,6 +82,11 @@ let getter = () => {
         // console.log(window.scrollY + window.innerHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             let marker = document.getElementById("marker");
+
+            if (marker == null) {
+                clearTimeout(t);
+            }
+
             marker.innerText = "getting new posts...";
             
             let r = document.getElementsByClassName("post-list").length - 1;

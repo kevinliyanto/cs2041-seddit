@@ -74,15 +74,11 @@ let setVote = (data) => {
 
     getUserId()
         .then((id) => {
-            checkUpvote(data.id, id)
-                .then((res) => {
-                    if (res) {
-                        togglebutton(button);
-                    }
-                })
-                .catch(() => {
-                    modalError_GetPost();
-                });
+            for (let i = 0; i < data.meta.upvotes.length; i++) {
+                if (data.meta.upvotes[i] == id) {
+                    button.classList.remove("md-inactive");
+                }
+            }
 
             button.onclick = () => {
                 checkUpvote(data.id, id)

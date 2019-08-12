@@ -47,15 +47,11 @@ let upvoteButton = (data) => {
         button.style.cursor = "pointer";
         getUserId()
             .then((id) => {
-                checkUpvote(data.id, id)
-                    .then((res) => {
-                        if (res) {
-                            togglebutton(button);
-                        }
-                    })
-                    .catch(() => {
-                        modalError_GetPost();
-                    });
+                for (let i = 0; i < data.meta.upvotes.length; i++) {
+                    if (data.meta.upvotes[i] == id) {
+                        button.classList.remove("md-inactive");
+                    }
+                }
 
                 button.onclick = () => {
                     checkUpvote(data.id, id)
@@ -63,7 +59,7 @@ let upvoteButton = (data) => {
                             if (upvoted) {
                                 deleteVote(data.id)
                                     .then(() => {
-                                        togglebutton(button);
+                                        button.classList.add("md-inactive");
                                         let votecount = document.getElementById("post" + data.id);
                                         let previous = votecount.innerText;
                                         votecount.innerText = Number(previous) - 1;
@@ -74,7 +70,7 @@ let upvoteButton = (data) => {
                             } else {
                                 putVote(data.id)
                                     .then(() => {
-                                        togglebutton(button);
+                                        button.classList.remove("md-inactive");
                                         let votecount = document.getElementById("post" + data.id);
                                         let previous = votecount.innerText;
                                         votecount.innerText = Number(previous) + 1;
