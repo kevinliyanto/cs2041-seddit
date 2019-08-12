@@ -9,14 +9,9 @@ import {
 } from "./singlepost.js";
 import setNavbar from "./navbar.js";
 import {
-    right_navigation, setBackButton
+    right_navigation,
+    setBackButton
 } from "./rightpanel.js";
-import {
-    Lock
-} from "./Mutex.js";
-import {
-    getUserFeed
-} from "../requests.js";
 
 
 let setFeed = () => {
@@ -55,7 +50,7 @@ let setAll = () => {
 
     let se = document.createElement("div");
     se.className = "subseddit-title";
-    
+
     // It's/all good man
     se.innerText = "Seddit (s/all)";
     rightpanel.appendChild(se);
@@ -63,12 +58,12 @@ let setAll = () => {
     main.appendChild(rightpanel);
 
     getPublic()
-        .then(file => file.posts)
         .then((arr) => {
             // console.log(arr);
+            generateInitPosts(arr);
             let users = [];
-            for (let i = 0; i < arr.length; i++) {
-                users.push(arr[i].meta.author);
+            for (let i = 0; i < arr.posts.length; i++) {
+                users.push(arr.posts[i].meta.author);
             }
             return users;
         })
@@ -85,7 +80,6 @@ let setAll = () => {
                 .then((users) => {
                     let arr = [];
                     for (let i = 0; i < users.length; i++) {
-
                         arr.push(users[i].id);
                     }
                     return arr;
@@ -95,6 +89,14 @@ let setAll = () => {
                     getter(userids, empty);
                 });
         })
+}
+
+let generateInitPosts = (file) => {
+    let feed = document.getElementById("feed");
+    for (let i = 0; i < file.posts.length; i++) {
+        let list = setPost(file.posts[i]);
+        if (feed != null) feed.appendChild(list);
+    }
 }
 
 let generatePostsOfUser = (postsid) => {
@@ -107,10 +109,18 @@ let generatePostsOfUser = (postsid) => {
             .then((data) => {
                 if (feed == null) return;
                 let list = setPost(data);
-
-                if (feed != null) feed.appendChild(list);
+                if (!duplicate(data.id)) feed.appendChild(list);
             });
     }
+}
+
+let duplicate = (id) => {
+    let arr = document.getElementsByClassName("post-list");
+    for (let i = 0; i < arr.length; i++) {
+        let attr = arr[i].getAttribute("data-id-post");
+        if (attr == id) return true;
+    }
+    return false;
 }
 
 let array_getuniq = (check, ref) => {
@@ -163,76 +173,66 @@ let getter = (followed, done) => {
 
     let arr_done = done;
 
-    let lock = new Lock();
+    // Instead of mutex, use flag. Safety is ensured if the flag is put in the beginning of function.
+    let flag = true;
+    let end = false;
 
-    // Make three array
-    // Two same array and new empty called buffer
-    // Process arr_proc one by one
-    // current arr_proc will deposit its content into buffer (obv after checking itself and arr_done)
-    // When current arr_proc is done, put into arr_done
-    // When arr_proc is empty, check buffer
-    // If empty, clear timeout
-    // If not empty, move buffer into arr_proc
-
-    // This is a hacky way to fix the clearTimeout problem
-    // But it works
-    // If it works, it's not stupid
-    // *200 IQ*
     let run = () => {
-        let t = 0;
-        // console.log(arr_proc);
-        // console.log(arr_done);
-        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        if ((h - 400 < window.scrollY + window.innerHeight)) {
-            let marker = document.getElementById("marker");
+        console.log(arr_proc);
+        console.log(arr_done);
+        if (!flag) return;
+        if (end) return;
+        flag = false;
 
-            if (marker == null) {
-                clearTimeout(t);
-            }
+        let marker = document.getElementById("marker");
 
-            // Produces unsorted feed
-            let curr = arr_proc.shift();
-
-            let done = () => {
-                if (marker != null) {
-                    marker.innerText = "You have reached bottom of the page";
-                }
-                lock.release();
-                clearTimeout(t);
-                return;
-            }
-
-            if (curr == null) {
-                done();
-            }
-
-            getUserById(curr)
-                .then((res) => {
-                    if (marker == null) {
-                        done();
-                    }
-
-                    generatePostsOfUser(res.posts);
-                    arr_done.push(curr);
-
-                    lock.hold(() => {
-                        let f = array_getuniq(res.following, arr_done);
-                        let r = array_join(arr_proc, f);
-                        arr_proc = r;
-                        lock.release();
-                    })
-
-                })
-                .catch(() => {
-                    // Avoid deadlock
-                    clearTimeout(t);
-                    lock.release();
-                });
+        if (marker == null) {
+            end = true;
+            return;
         }
-        t = setTimeout(run, 300);
-    }
 
-    setTimeout(run, 300);
+        let done = () => {
+            marker.innerText = "You have reached bottom of the page";
+            end = true;
+            return;
+        }
+
+        let curr = arr_proc.shift();
+
+        if (curr == null) {
+            done();
+        }
+
+        getUserById(curr)
+            .then((res) => {
+                generatePostsOfUser(res.posts);
+                return res.following;
+            })
+            .then((following_arr) => {
+                arr_done.push(curr);
+                let f = array_getuniq(following_arr, arr_done);
+                let r = array_join(arr_proc, f);
+                arr_proc = r;
+                flag = true;
+            })
+            .catch(() => {
+                flag = true;
+            });
+    }
+    
+    let f = () => {
+        console.log("run");
+        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        if ((h - 120 < window.scrollY + window.innerHeight)) {
+            run();
+        }
+        let marker = document.getElementById("marker");
+        if (marker == null || end) {
+            window.removeEventListener("scroll", f);
+        }
+    };
+
+    window.addEventListener("scroll", f);
 }
 
 let allSubseddit = () => {

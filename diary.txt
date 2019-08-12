@@ -17,3 +17,4 @@
 12/07/19    13:48   16:03   updated s/all with a better implementation of crawler (probably need a webworker for that). added simple search engine with simple regex.
 12/07/19    17:11   19:37   after getting my food, i implemented the subseddit and all subseddit with less bug. everything should be fine by now.
 12/07/19    19:37   21:12   fixing minor bugs and confusing UI's. There should be no user-side errors (apart from console obviously).
+12/07/19    22:08   23:05   learned that the assignment is due tomorrow... redoing some of infinite scroll so that it works smoothly (with event listener instead of polling the function).

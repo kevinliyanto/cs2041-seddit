@@ -61,7 +61,7 @@ let setMainHome = () => {
     main.appendChild(leftpanel);
     main.appendChild(rightpanel);
 
-    
+
     // Check if user authed, if authed then generate user post
     // else generate public post
     if (checkLogged()) {
@@ -81,46 +81,63 @@ let setMainHome = () => {
 }
 
 let getter = () => {
+    let flag = true;
+    let end = false;
+
     let run = () => {
-        let t = 0;
-        // console.log("run");
-        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        // console.log(h);
-        // console.log(window.scrollY + window.innerHeight);
-        if ((h - 120 < window.scrollY + window.innerHeight)) {
-            let marker = document.getElementById("marker");
+        if (!flag) return;
+        if (end) return;
+        flag = false;
 
-            if (marker == null) {
-                clearTimeout(t);
-            }
+        let marker = document.getElementById("marker");
 
-            let r = document.getElementsByClassName("post-list").length - 1;
-            let j = 10;
-            getUserFeed(r, j)
-                .then((file) => {
-                    let done = () => {
-                        if (document.getElementsByClassName("post-list").length == 0) {
-                            marker.innerText = "There is no result";
-                        } else {
-                            marker.innerText = "You have reached bottom of the page";
-                        }
-                        clearTimeout(t);
-                    }
-
-                    if (file.posts.length == 0 || file.posts.length < j) {
-                        done();
-                    }
-
-                    generatePosts(file);
-                })
-                .catch(() => {
-                    clearTimeout(t);
-                });
+        if (marker == null) {
+            end = true;
+            return;
         }
-        t = setTimeout(run, 400);
+
+        let r = document.getElementsByClassName("post-list").length - 1;
+        let j = 10;
+
+        let done = () => {
+            if (document.getElementsByClassName("post-list").length == 0) {
+                marker.innerText = "There is no result";
+            } else {
+                marker.innerText = "You have reached bottom of the page";
+            }
+            end = true;
+            return;
+        }
+
+        getUserFeed(r, j)
+            .then((file) => {
+                generatePosts(file);
+                if (file.posts.length == 0 || file.posts.length < j) {
+                    done();
+                }
+            })
+            .then(() => {
+                flag = true;
+            })
+            .catch(() => {
+                flag = true;
+            });
+
     }
 
-    setTimeout(run, 400);
+    let f = () => {
+        console.log("run");
+        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        if ((h - 120 < window.scrollY + window.innerHeight)) {
+            run();
+        }
+        let marker = document.getElementById("marker");
+        if (marker == null || end) {
+            window.removeEventListener("scroll", f);
+        }
+    };
+
+    window.addEventListener("scroll", f);
 }
 
 let homePage = () => {
