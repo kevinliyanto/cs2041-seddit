@@ -67,6 +67,7 @@ let getter = (subseddit) => {
     let end = false;
     let lastlen = 0;
     let p = 0;
+    let users = [];
 
     let run = () => {
         if (!flag) return;
@@ -105,17 +106,17 @@ let getter = (subseddit) => {
                 users = array_join(uniq, users);
                 return uniq;
             })
-            .then((users) => {
+            .then((k) => {
                 let promises = [];
-                for (let i = 0; i < users.length; i++) {
-                    let p = getUserByUsername(users[i]);
+                for (let i = 0; i < k.length; i++) {
+                    let p = getUserByUsername(k[i]);
                     promises.push(p);
                 }
                 p += 5;
                 Promise.all(promises.map(p => p.catch(() => undefined)))
-                    .then((users) => {
-                        for (let i = 0; i < users.length; i++) {
-                            generatePostsOfUser(users[i].posts, subseddit);
+                    .then((p) => {
+                        for (let i = 0; i < p.length; i++) {
+                            generatePostsOfUser(p[i].posts, subseddit);
                         }
                     })
             })
@@ -149,7 +150,6 @@ let getter = (subseddit) => {
 }
 
 let generatePostsOfUser = (postsid, subseddit) => {
-    console.log("generating post for user: " + postsid);
     if (postsid == null) return;
     let feed = document.getElementById("feed_sub");
     if (feed == null) return;
