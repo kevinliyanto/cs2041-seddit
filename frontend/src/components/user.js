@@ -24,7 +24,7 @@ import {
     routeSettings
 } from "../route.js";
 import {
-    right_navigation
+    right_navigation, setBackButton
 } from "./rightpanel.js";
 
 
@@ -101,7 +101,13 @@ let setRightUserPanel = (res) => {
                 following.classList.add("user-numeric-clickable");
                 following.title = "Click to show list of users followed";
                 following.onclick = () => {
-                    modal_upvotecount_load("Following", "", res.following);
+                    let text = "";
+                    if (res.following.length == 0) {
+                        text = "User is not following any user";
+                    } else {
+                        text = "Following:";
+                    }
+                    modal_upvotecount_load("Following", text, res.following);
                 }
             }
         });
@@ -342,6 +348,7 @@ let userPageId = (id) => {
 
     // Restriction is implemented in route
     setMainUserId(id);
+    setBackButton();
 }
 
 export {

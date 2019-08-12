@@ -10,7 +10,8 @@ import {
     routeSignup,
     routeSettings,
     refresh,
-    routeSearch
+    routeSearch,
+    routeAllSubseddit
 } from "../route.js";
 
 let right_navigation = () => {
@@ -40,6 +41,13 @@ let right_navigation = () => {
     all.appendChild(button_refresh);
 
     if (checkLogged()) {
+        let button_all = document.createElement("button");
+        button_all.className = "nav-button";
+        button_all.innerText = "s/all";
+        button_all.onclick = () => {
+            routeAllSubseddit();
+        }
+
         let button_newpost = document.createElement("button");
         button_newpost.className = "nav-button";
         button_newpost.innerText = "Submit new post";
@@ -61,6 +69,7 @@ let right_navigation = () => {
             routeSettings();
         }
 
+        all.appendChild(button_all);
         all.appendChild(button_newpost);
         all.appendChild(button_user);
         all.appendChild(button_setting);
@@ -98,15 +107,62 @@ let right_navigation = () => {
         all.appendChild(signup);
     }
 
-    
+    return all;
+}
+
+let right_button = () => {
+    let button = document.createElement("button");
+    button.innerText = "Back to top";
+    button.id = "backtotopbutton";
+    button.className = "button-back";
+    button.onclick = () => {
+        window.scrollTo(0, 0);
+    }
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            button.style.display = "block";
+        } else {
+            button.style.display = "none";
+        }
+    });
+    return button;
+}
+
+let setBackButton = () => {
+    let s = document.getElementById("backtotopbutton");
+    if (s == null)
+        document.body.appendChild(right_button());
+}
+
+let welcome = () => {
+    let all = document.createElement("div");
+    all.className = "subseddit-welcome";
+
+    let h3 = document.createElement("h3");
+    h3.innerText = "Welcome to Seddit";
+    h3.className = "subseddit-inner-welcome";
+    all.appendChild(h3);
+
+    let p = document.createElement("p");
+    p.className = "subseddit-inner-welcome-2";
+    p.innerText = "Where you can post whatever you want";
+    all.appendChild(p);
+
+    let signup = document.createElement("button");
+    signup.className = "nav-button button-secondary subseddit-button-welcome";
+    signup.innerText = "Be a seddittor";
+    signup.setAttribute("data-id-signup", "");
+    signup.onclick = () => {
+        routeSignup();
+    }
+    all.appendChild(signup);
 
     return all;
 }
 
-let right_welcome = () => {
-
-}
-
 export {
-    right_navigation
+    right_navigation,
+    setBackButton,
+    welcome
 };

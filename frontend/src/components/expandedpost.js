@@ -36,7 +36,7 @@ import {
 import {
     convertToNow
 } from "./timeformat.js";
-import { right_navigation } from "./rightpanel.js";
+import { right_navigation, setBackButton } from "./rightpanel.js";
 
 
 let setVote = (data) => {
@@ -479,6 +479,7 @@ let expandedPost = (id) => {
     getPost(id)
         .then((data) => {
             generatePost(data);
+            setBackButton();
         })
         .catch(() => {
             generateNone();

@@ -10,6 +10,13 @@ function searchBar() {
     return search;
 }
 
+function homeButton() {    
+    let d = document.createElement("button");
+    d.className = "button button-home";
+    d.innerText = "Home";
+    return d;
+}
+
 function loginButton() {
     let login = document.createElement("button");
     login.setAttribute("data-id-login", "");
@@ -58,17 +65,23 @@ let generateNavlistPub = () => {
     let list_3 = document.createElement("li");
     list_3.className = "nav-item";
 
+    let home = homeButton();
+    home.onclick = () => {
+        routeHome();
+    }
+    list_1.appendChild(home);
+
     let login = loginButton();
     login.onclick = () => {
         routeLogin();
     }
-    // list_2.appendChild(login);
+    list_2.appendChild(login);
 
     let signup = signupButton();
     signup.onclick = () => {
         routeSignup();
     }
-    // list_3.appendChild(signup);
+    list_3.appendChild(signup);
 
     rightlist.appendChild(list_1);
     rightlist.appendChild(list_2);

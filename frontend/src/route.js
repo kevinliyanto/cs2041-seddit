@@ -27,6 +27,7 @@ import {
 } from "./components/settings.js";
 import { allSubseddit } from "./components/allsubseddit.js";
 import { searchPage } from "./components/search.js";
+import { subsedditPage } from "./components/subseddit.js";
 
 // TODO
 
@@ -141,14 +142,41 @@ let routeSubmit = () => {
 }
 
 let routeSearch = (string) => {
+    if (!checkLogged()) {
+        routeLastVisited();
+        modal_errors_load("Error", "You are not logged in yet");
+        return;
+    }
+
+    // if string has a leading s/ or /s/, it's a subseddit
+    let re = /^\/?s\/\:?(\w+)\/?$/;
+    let p = string.match(re);
+    if (p != null){
+        switch (p[1]) {
+            case "all":
+                routeAllSubseddit();
+                break;
+            default:
+                routeSubseddit(p[1]);
+                break;
+        }
+        return;
+    }
+
     history.replaceState(null, null, document.location.pathname + '#search=' + string);
     searchPage(string);
+    storeLastVisited();
 }
 
 let routeSubseddit = (subseddit) => {
-    if (subseddit == "all") {
-        routeAllSubseddit();
+    if (!checkLogged()) {
+        routeLastVisited();
+        modal_errors_load("Error", "You are not logged in yet");
+        return;
     }
+    history.replaceState(null, null, document.location.pathname + '#s/' + subseddit);
+    subsedditPage(subseddit);
+    storeLastVisited();
 }
 
 let routeInvalid = () => {
@@ -195,6 +223,9 @@ let routes = () => {
             case '#submit':
                 routeSubmit();
                 break;
+            case '#s/all':
+                routeAllSubseddit();
+                break;
             default:
                 // Check hash if it has the valid tags: /#s/ or /#u/ 
                 // or /#profile=\d+ or /#feed=\d+
@@ -220,7 +251,7 @@ let routes = () => {
                     let p = location.hash.match(re);
                     routeEditPost(p[1]);
                 } else if (checkHashSearch(location.hash)) {
-                    let re = /^#search\=(\w+)$/;
+                    let re = /^#search\=(.+)$/;
                     let p = location.hash.match(re);
                     routeSearch(p[1]);
                 } else {
@@ -276,7 +307,7 @@ let checkHashFeedEdit = (hash) => {
 }
 
 let checkHashSearch = (hash) => {
-    let re = /^#search\=\w+$/;
+    let re = /^#search\=.+$/;
     return re.test(hash);
 }
 
@@ -301,6 +332,7 @@ export {
     routeSettings,
     routeSubmit,
     routeSearch,
+    routeAllSubseddit,
     routeSubseddit,
     routeInvalid,
     refresh,

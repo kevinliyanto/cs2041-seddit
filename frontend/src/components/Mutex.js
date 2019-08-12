@@ -5,7 +5,7 @@ class Lock {
     }
 
     hold(callback) {
-        if(this.lock) {
+        if (this.lock) {
             this.lock--;
             callback();
         } else {
@@ -13,12 +13,12 @@ class Lock {
         }
     }
 
-    release(){
-        if (this.queue.length > 0){
+    release() {
+        if (this.queue.length > 0) {
             let callback = this.queue.pop();
             setTimeout(() => callback, 0);
         } else {
-            this.lock++;
+            if (this.lock == 0) this.lock++;
         }
     }
 

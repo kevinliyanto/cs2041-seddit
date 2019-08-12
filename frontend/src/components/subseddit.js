@@ -15,18 +15,18 @@ import {
     Lock
 } from "./Mutex.js";
 import {
-    getUserFeed
-} from "../requests.js";
-
+    array_getuniq,
+    array_join
+} from "./allsubseddit.js";
 
 let setFeed = () => {
     let feed = document.createElement("ul");
-    feed.id = "feed";
+    feed.id = "feed_sub";
     feed.setAttribute("data-id-feed", "");
     return feed;
 }
 
-let setAll = () => {
+let setSubseddit = (subseddit) => {
     let main = document.getElementById("main");
     // Cleanup main
     while (main.firstChild) {
@@ -47,17 +47,16 @@ let setAll = () => {
     let marker = document.createElement("div");
     marker.id = "marker";
     marker.className = "marker";
-    marker.innerText = "getting new posts...";
+    marker.innerText = "getting posts...";
     leftpanel.appendChild(marker);
+
     // Generate right panel interface, similar to reddit
 
     main.appendChild(leftpanel);
 
     let se = document.createElement("div");
     se.className = "subseddit-title";
-    
-    // It's/all good man
-    se.innerText = "Seddit (s/all)";
+    se.innerText = "s/" + subseddit;
     rightpanel.appendChild(se);
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
@@ -92,62 +91,12 @@ let setAll = () => {
                 })
                 .then((userids) => {
                     let empty = [];
-                    getter(userids, empty);
+                    getter(userids, empty, subseddit);
                 });
         })
 }
 
-let generatePostsOfUser = (postsid) => {
-    if (postsid == null) return;
-    let feed = document.getElementById("feed");
-    if (feed == null) return;
-
-    for (let i = 0; i < postsid.length; i++) {
-        getPost(postsid[i])
-            .then((data) => {
-                if (feed == null) return;
-                let list = setPost(data);
-
-                if (feed != null) feed.appendChild(list);
-            });
-    }
-}
-
-let array_getuniq = (check, ref) => {
-    let ret = [];
-
-    if (check == null) return ret;
-
-    for (let i = 0; i < check.length; i++) {
-        let app = true;
-        for (let j = 0; j < ref.length; j++) {
-            if (ref[j] == check[i]) app = false;
-        }
-        if (app) ret.push(check[i]);
-    }
-
-    return ret;
-}
-
-let array_join = (s1, s2) => {
-    let ret = [];
-
-    for (let i = 0; i < s1.length; i++) {
-        ret.push(s1[i]);
-    }
-
-    for (let i = 0; i < s2.length; i++) {
-        let app = true;
-        for (let j = 0; j < s1.length; j++) {
-            if (s1[j] == s2[i]) app = false;
-        }
-        if (app) ret.push(s2[i]);
-    }
-
-    return ret;
-}
-
-let getter = (followed, done) => {
+let getter = (followed, done, subseddit) => {
     let arr_proc = followed;
     arr_proc.sort((a, b) => b - a);
     // Make sure that arr_proc is unique
@@ -165,19 +114,6 @@ let getter = (followed, done) => {
 
     let lock = new Lock();
 
-    // Make three array
-    // Two same array and new empty called buffer
-    // Process arr_proc one by one
-    // current arr_proc will deposit its content into buffer (obv after checking itself and arr_done)
-    // When current arr_proc is done, put into arr_done
-    // When arr_proc is empty, check buffer
-    // If empty, clear timeout
-    // If not empty, move buffer into arr_proc
-
-    // This is a hacky way to fix the clearTimeout problem
-    // But it works
-    // If it works, it's not stupid
-    // *200 IQ*
     let run = () => {
         let t = 0;
         // console.log(arr_proc);
@@ -195,7 +131,11 @@ let getter = (followed, done) => {
 
             let done = () => {
                 if (marker != null) {
-                    marker.innerText = "You have reached bottom of the page";
+                    if (document.getElementsByClassName("post-list").length == 0) {
+                        marker.innerText = "There is no result";
+                    } else {
+                        marker.innerText = "You have reached bottom of the page";
+                    }
                 }
                 lock.release();
                 clearTimeout(t);
@@ -211,8 +151,7 @@ let getter = (followed, done) => {
                     if (marker == null) {
                         done();
                     }
-
-                    generatePostsOfUser(res.posts);
+                    generatePostsOfUser(res.posts, subseddit);
                     arr_done.push(curr);
 
                     lock.hold(() => {
@@ -229,20 +168,41 @@ let getter = (followed, done) => {
                     lock.release();
                 });
         }
-        t = setTimeout(run, 300);
+        t = setTimeout(run, 500);
     }
 
     setTimeout(run, 300);
 }
 
-let allSubseddit = () => {
+let generatePostsOfUser = (postsid, subseddit) => {
+    if (postsid == null) return;
+    let feed = document.getElementById("feed_sub");
+    if (feed == null) return;
+
+    for (let i = 0; i < postsid.length; i++) {
+        getPost(postsid[i])
+            .then((data) => {
+                if (feed == null) return;
+
+                let list = setPost(data);
+
+                let re = new RegExp("^" + subseddit + "$", "i");
+                // console.log(data.meta.subseddit + " " + subseddit);
+                if (!re.test(data.meta.subseddit)) {
+                    // console.log("not match");
+                    return;
+                }
+                if (feed != null) feed.appendChild(list);
+            });
+    }
+}
+
+let subsedditPage = (subseddit) => {
     setNavbar();
-    setAll();
+    setSubseddit(subseddit);
     setBackButton();
 }
 
 export {
-    array_getuniq,
-    array_join,
-    allSubseddit
+    subsedditPage
 }

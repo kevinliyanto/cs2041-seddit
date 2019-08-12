@@ -1,9 +1,8 @@
 import { postLogin } from "../requests.js";
 import { storeSession, fetchUserId, checkLogged } from "../localstorage.js";
 import setNavbar from "./navbar.js";
-import { routeHome } from "../route.js";
-import { right_navigation } from "./rightpanel.js";
-import { modalError_Login } from "./modal.js";
+import { routeHome, routeSignup } from "../route.js";
+import { modalError_Login, modal_errors_load } from "./modal.js";
 
 let formInput = (type, name, placeholder) => {
     let form = document.createElement("input");
@@ -27,7 +26,7 @@ let checkInput = () => {
     let uname = document.getElementsByName("username");
     let passw = document.getElementsByName("password");
     if (uname[0].value.length == 0 || passw[0].value.length == 0){
-        showModal("Invalid input");
+        modal_errors_load("Error", "You haven't supplied any username nor password")
         return false;
     }
     return true;
@@ -83,6 +82,8 @@ let setLogin = () => {
     loginSection.appendChild(document.createElement("br"));
     loginSection.appendChild(document.createElement("br"));
 
+
+
     // Create button
     let login = submitButton();
     login.onclick = () => {
@@ -111,12 +112,20 @@ let setLogin = () => {
     }
     main.appendChild(loginSection);
 
-    let rightpanel = document.createElement("div");
-    rightpanel.id = "rightpanel";
-    rightpanel.className = "rightpanel";
-    let right = right_navigation();
-    rightpanel.appendChild(right);
-    main.appendChild(rightpanel);
+    let noAccount = document.createElement("p");
+    noAccount.className = "sedditlogin";
+    noAccount.innerText = "New to Seddit? Sign up";
+
+    noAccount.onclick = () => {
+        routeSignup();
+    }
+    loginSection.appendChild(noAccount);
+    // let rightpanel = document.createElement("div");
+    // rightpanel.id = "rightpanel";
+    // rightpanel.className = "rightpanel";
+    // let right = right_navigation();
+    // rightpanel.appendChild(right);
+    // main.appendChild(rightpanel);
 }
 
 let loginPage = () => {

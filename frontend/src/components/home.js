@@ -10,7 +10,9 @@ import {
     checkLogged
 } from "../localstorage.js";
 import {
-    right_navigation
+    right_navigation,
+    setBackButton,
+    welcome
 } from "./rightpanel.js";
 
 
@@ -19,7 +21,7 @@ let generatePosts = (file) => {
     for (let i = 0; i < file.posts.length; i++) {
         // console.log(file.posts[i]);
         let list = setPost(file.posts[i]);
-        feed.appendChild(list);
+        if (feed != null) feed.appendChild(list);
     }
 }
 
@@ -51,25 +53,30 @@ let setMainHome = () => {
     let marker = document.createElement("div");
     marker.id = "marker";
     marker.className = "marker";
+    marker.innerText = "getting new posts...";
     leftpanel.appendChild(marker);
 
     // Generate right panel interface, similar to reddit
 
     main.appendChild(leftpanel);
-
-    rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);
 
+    
     // Check if user authed, if authed then generate user post
     // else generate public post
     if (checkLogged()) {
+        rightpanel.appendChild(right_navigation());
         getUserFeed(0, 10)
             .then((file) => {
                 generatePosts(file);
                 getter();
             });
     } else {
-        getPublic().then(file => generatePosts(file));
+        rightpanel.appendChild(welcome());
+        getPublic().then(file => {
+            generatePosts(file)
+            leftpanel.removeChild(marker);
+        });
     }
 }
 
@@ -77,7 +84,7 @@ let getter = () => {
     let run = () => {
         let t = 0;
         // console.log("run");
-        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight,document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         // console.log(h);
         // console.log(window.scrollY + window.innerHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
@@ -87,24 +94,16 @@ let getter = () => {
                 clearTimeout(t);
             }
 
-            marker.innerText = "getting new posts...";
-            
             let r = document.getElementsByClassName("post-list").length - 1;
             let j = 10;
             getUserFeed(r, j)
                 .then((file) => {
                     let done = () => {
-                        marker.innerText = "You have reached bottom of the page\n\n";
-    
-                        let button = document.createElement("button");
-                        button.innerText = "Back to top";
-                        button.className = "button button-secondary";
-    
-                        button.onclick = () => {
-                            window.scrollTo(0, 0);
+                        if (document.getElementsByClassName("post-list").length == 0) {
+                            marker.innerText = "There is no result";
+                        } else {
+                            marker.innerText = "You have reached bottom of the page";
                         }
-    
-                        marker.appendChild(button);
                         clearTimeout(t);
                     }
 
@@ -128,6 +127,7 @@ let homePage = () => {
     // setLastVisited("#home");
     setNavbar();
     setMainHome();
+    setBackButton();
 }
 
 export default homePage;

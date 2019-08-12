@@ -3,9 +3,11 @@ import { getPost, putPost } from "../requests.js";
 import { getUsername } from "../localstorage.js";
 import { modal_errors_load, modalError_SetPost, modalError_RestrictionSetPost } from "./modal.js";
 import { routeHome, routeExpandedPost } from "../route.js";
+import { right_navigation } from "./rightpanel.js";
 
 let form = (data) => {
     let formdiv = document.createElement("div");
+    formdiv.className = "leftpanel";
 
     let div1 = document.createElement("div");
     let submission = document.createElement("h1");
@@ -159,6 +161,12 @@ let setEditPage = (data) => {
 
     let formdiv = form(data);
     main.appendChild(formdiv);
+
+    let rightpanel = document.createElement("div");
+    rightpanel.id = "rightpanel";
+    rightpanel.className = "rightpanel";
+    rightpanel.appendChild(right_navigation());
+    main.appendChild(rightpanel);
 }
 
 let editPost = (id) => {

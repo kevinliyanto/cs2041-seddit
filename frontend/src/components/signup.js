@@ -1,8 +1,8 @@
 import setNavbar from "./navbar.js";
 import { postSignup } from "../requests.js";
 import { storeSession, fetchUserId, checkLogged } from "../localstorage.js";
-import { routeHome } from "../route.js";
-import { modal_success_load, modalError_Signup } from "./modal.js";
+import { routeHome, routeLogin } from "../route.js";
+import { modal_success_load, modalError_Signup, modal_errors_load } from "./modal.js";
 import { right_navigation } from "./rightpanel.js";
 
 
@@ -59,7 +59,7 @@ let checkInput = () => {
     }
 
     if (!valid) {
-        showModal(message);
+        modal_errors_load("Error", message);
     }
     return valid;
 }
@@ -158,12 +158,21 @@ let setSignup = () => {
     }
     main.appendChild(signupSection);
 
-    let rightpanel = document.createElement("div");
-    rightpanel.id = "rightpanel";
-    rightpanel.className = "rightpanel";
-    let right = right_navigation();
-    rightpanel.appendChild(right);
-    main.appendChild(rightpanel);
+    let alreadyHave = document.createElement("p");
+    alreadyHave.className = "sedditlogin";
+    alreadyHave.innerText = "Already have an account? Sign in";
+
+    alreadyHave.onclick = () => {
+        routeLogin();
+    }
+    signupSection.appendChild(alreadyHave);
+
+    // let rightpanel = document.createElement("div");
+    // rightpanel.id = "rightpanel";
+    // rightpanel.className = "rightpanel";
+    // let right = right_navigation();
+    // rightpanel.appendChild(right);
+    // main.appendChild(rightpanel);
 }
 
 let submit = () => {

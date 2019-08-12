@@ -1,5 +1,5 @@
 import {
-    right_navigation
+    right_navigation, setBackButton
 } from "./rightpanel.js";
 import setNavbar from "./navbar.js";
 import {
@@ -8,6 +8,7 @@ import {
 import {
     setPost
 } from "./singlepost.js";
+import { routeSubseddit } from "../route.js";
 
 
 // Just regex everything loool
@@ -17,7 +18,12 @@ let simpleSearchEngine = (file, string) => {
     let re = new RegExp(string, "i");
     let exist = re.test(file.text);
     exist = exist || re.test(file.meta.author);
-    exist = exist || re.test(file.meta.subseddit);
+
+
+    let re2 = /(\/?s\/)?(.+)/;
+    let re_m = string.match(re2);
+    let re3 = new RegExp(re_m[re_m.length - 1], "i");
+    exist = exist || re3.test(file.meta.subseddit);
 
     if (exist) return true;
 
@@ -39,7 +45,7 @@ let generatePosts = (file, string) => {
 
         if (duplicate(file.posts[i].id)) continue;
         let list = setPost(file.posts[i]);
-        feed.appendChild(list);
+        if (feed != null) feed.appendChild(list);
     }
 }
 
@@ -80,6 +86,7 @@ let setSearch = (string) => {
     let marker = document.createElement("div");
     marker.id = "marker";
     marker.className = "marker";
+    marker.innerText = "getting posts...";
     leftpanel.appendChild(marker);
 
     // Generate right panel interface, similar to reddit
@@ -116,26 +123,14 @@ let getter = (string) => {
                 clearTimeout(t);
             }
 
-            marker.innerText = "getting new posts...";
-
-            
             let done = () => {
                 if (document.getElementsByClassName("post-list").length == 0) {
                     marker.innerText = "There is no result";
                 } else {
-                    marker.innerText = "You have reached bottom of the page\n\n";
-                
-                    let button = document.createElement("button");
-                    button.innerText = "Back to top";
-                    button.className = "button button-secondary";
-                    button.onclick = () => {
-                        window.scrollTo(0, 0);
-                    } 
-                    marker.appendChild(button);
+                    marker.innerText = "You have reached bottom of the page";
                 }
                 clearTimeout(t);
             }
-            
             
             let j = 10;
             getUserFeed(f, j)
@@ -152,10 +147,10 @@ let getter = (string) => {
                     clearTimeout(t);
                 });
         }
-        t = setTimeout(run, 400);
+        t = setTimeout(run, 300);
     }
 
-    setTimeout(run, 400);
+    setTimeout(run, 300);
 }
 
 let searchPage = (string) => {
@@ -163,8 +158,10 @@ let searchPage = (string) => {
 
     // Restriction is implemented in route
     setSearch(string);
+    setBackButton();
 }
 
 export {
+    simpleSearchEngine,
     searchPage
 }

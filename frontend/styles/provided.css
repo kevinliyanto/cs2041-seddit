@@ -146,10 +146,15 @@ footer {
   padding: 0;
 }
 
+h3 {
+  margin: 0 0;
+}
+
 .main {
   display: grid;
   grid-template-columns: 72% 1% 26% 1%;
-  grid-template-areas: 'left . right'
+  grid-template-areas: 'left . right';
+  padding-bottom: 35px;
 }
 
 .leftpanel {
@@ -509,9 +514,17 @@ footer {
   padding: 2px 16px;
   background-color: #b90921;
   color: white;
-  min-height: 1rem;
+  min-height: 2rem;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+}
+
+#modal_header_succ,
+#modal_header_text_2,
+#modal_header_text_3,
+#modal_header_text {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .modal-header-style2 {
@@ -582,7 +595,7 @@ footer {
 
 .submission-title {
   width: 100%;
-  height: 40px;
+  height: 60px;
   border: 2px solid;
   max-height: 200px;
   font-size: 26px;
@@ -724,11 +737,11 @@ footer {
 }
 
 .right-content {
-  overflow: hidden;
   border: 2px solid var(--reddit-grey);
   border-radius: 6px;
   margin-bottom: 10px;
   padding: 10px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -759,10 +772,10 @@ footer {
   outline: none;
   border: 1px solid var(--reddit-grey);
   border-radius: 4px;
-  width: 100%;
+  width: 90%;
   height: 30px;
   margin: 5px;
-  padding: 0 0;
+  padding: 0 10px;
 }
 
 .nav-search::placeholder {
@@ -785,6 +798,7 @@ footer {
   color: white;
 }
 
+#feed_sub,
 #feed_user {
   min-width: 350px;
   max-width: 1250px;
@@ -793,8 +807,80 @@ footer {
   padding: 0;
 }
 
+
 .marker {
-  height: 80px;
+  height: 40px;
   text-align: center;
   align-items: center;
+  padding-top: 25px;
+  font-weight: bold;
+}
+
+.subseddit-title {
+  text-align: center;
+  font-size: 26px;
+  padding: 6px;
+  border: 2px solid #5cb85c;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  word-wrap: break-word;
+}
+
+.subseddit-welcome {
+  text-align: center;
+  padding: 6px;
+  border: 2px solid #5cb85c;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  word-wrap: break-word;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.subseddit-inner-welcome {
+  margin: 3px 3px;
+}
+
+.subseddit-inner-welcome-2 {
+  margin: 3px 3px;
+}
+
+.subseddit-button-welcome {
+  height: 36px;
+}
+
+.button-back {
+  display: none;
+  position: fixed;
+  bottom: 0; 
+  width: 100%;
+  border: none; 
+  outline: none; 
+  background-color: blue;
+  color: white; 
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 10px 10px 0 0; 
+  font-size: 18px;
+}
+
+.button-back:hover {
+  background-color: darkblue;
+}
+
+.button-home {
+  border: 1px solid #000000;
+  color: black;
+}
+
+.sedditlogin {
+  font-size: 14px;
+  color: rgb(100, 100, 100);
+  font-weight: bold;
+}
+
+.sedditlogin:hover {
+  cursor: pointer;
 }
