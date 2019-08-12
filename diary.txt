@@ -19,4 +19,4 @@
 12/07/19    19:37   21:12   fixing minor bugs and confusing UI's. There should be no user-side errors (apart from console obviously).
 12/07/19    22:08   23:05   learned that the assignment is due tomorrow... redoing some of infinite scroll so that it works smoothly (with event listener instead of polling the function).
 13/07/19    00:31   01:13   finished on all needed infinite scroll (search and subseddit)
- 
+13/07/19    01:49   03:41   heavy modification on UI for convenience, and then dedicated page for search and its functionality.
