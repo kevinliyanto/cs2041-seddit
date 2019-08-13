@@ -40,6 +40,7 @@ let form = () => {
     let div5 = document.createElement("div");
     let image = document.createElement("input");
     image.type = "file";
+    image.accept= "image/*";
     image.id = "image";
     div5.appendChild(image);
 
@@ -79,12 +80,6 @@ let form = () => {
             return;
         }
 
-        let re_img = /\W(\w+\.png)$/
-        if (imgPath != "" && !re_img.test(imgPath)) {
-            modal_errors_load("Error", "Invalid image provided. Please provide image with extension \".png\"");
-            return;
-        }
-
         let sseddit = "";
         if (sub.length != 0) {
             sseddit = sub.match(re_sub)[sub.match(re_sub).length - 1];
@@ -104,7 +99,13 @@ let form = () => {
                 let reader = new FileReader();
                 reader.onloadend = () => {
                     // console.log(reader.result);
-                    let re = /^data\:image\/png\;base64\,(.*)$/;
+                    let re = /^data\:image\/\w+\;base64\,(.*)$/;
+
+                    if (reader.result.match(re) == null) {
+                        modal_errors_load("Error", "Invalid file provided.");
+                        return;
+                    }
+
                     let imageb64 = reader.result.match(re)[1];
                     submitPost(title, text, sseddit, imageb64)
                         .then((res) => {

@@ -28,6 +28,7 @@
 13/07/19    18:03   18:15   implementing simple go back to page mechanism button and bit of redesign
 13/07/19    18:43   19:11   minor fix on css and home so that the user won't be confused
 13/07/19    19:11   19:22   minor fix on user page interactivity
+13/07/19    20:36   20:41   fixing minor bug on edit and adding feature to be able to submit only image file. all type of image are accepted.
 
 
 End of submission
