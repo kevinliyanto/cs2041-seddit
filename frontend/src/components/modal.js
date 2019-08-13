@@ -461,7 +461,7 @@ let modalError_SetUser = () =>{
 }
 
 let modalError_RestrictionVote = () => {
-    modal_errors_load("Error", "You are not logged in yet");
+    modal_errors_load("Error", "You are not logged in yet", "You need to log in to vote on posts");
 }
 
 let modalError_InvalidUser = () => {

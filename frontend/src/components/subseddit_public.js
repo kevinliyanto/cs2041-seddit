@@ -132,6 +132,8 @@ let getter = (followed, done, subseddit) => {
         }
 
         let done = () => {
+            if (!flag) setTimeout(done, 250);
+            
             if (document.getElementsByClassName("post-list").length == 0) {
                 marker.innerText = "subseddit s/" + subseddit + " is not found";
             } else {

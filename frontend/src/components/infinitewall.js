@@ -195,6 +195,8 @@ let getter = (followed, done) => {
         }
 
         let done = () => {
+            if (!flag) setTimeout(done, 250);
+            
             marker.innerText = "You have reached bottom of the page";
             end = true;
             return;

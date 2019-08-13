@@ -4,7 +4,11 @@ import {
 } from "./rightpanel.js";
 import setNavbar from "./navbar.js";
 import {
-    getUserFeed
+    getUserFeed,
+    getPublic,
+    getUserByUsername,
+    getUserById,
+    getPost
 } from "../requests.js";
 import {
     setPost
@@ -15,7 +19,11 @@ import {
     routeAllSubseddit,
     routeInfinite
 } from "../route.js";
-
+import {
+    array_getuniq,
+    array_join
+} from "./allSeddit.js";
+import { setLastVisited } from "../localstorage.js";
 
 // Just regex everything loool
 let simpleSearchEngine = (file, string) => {
@@ -23,6 +31,7 @@ let simpleSearchEngine = (file, string) => {
     // console.log(string);
     let re = new RegExp(string, "i");
     let exist = re.test(file.text);
+    exist = exist || re.test(file.title);
     exist = exist || re.test(file.meta.author);
 
 
@@ -110,7 +119,7 @@ let setSearchBar = (string) => {
     let tickbox2 = document.createElement("input");
     tickbox2.type = "checkbox";
     let text3 = document.createElement("a");
-    text3.innerText = "Check public version of subseddit (&all=true)";
+    text3.innerText = "Check public version (&all=true)";
     text3.style.cursor = "default";
 
     div3b.appendChild(tickbox2);
@@ -131,7 +140,9 @@ let setSearchBar = (string) => {
                 if (tickbox2.checked) append = "&all=true";
                 getter("s/" + searchfield.value + append);
             } else {
-                getter(searchfield.value);
+                let append = "";
+                if (tickbox2.checked) append = "&all=true";
+                getter(searchfield.value + append);
             }
         }
     });
@@ -143,7 +154,9 @@ let setSearchBar = (string) => {
             if (tickbox2.checked) append = "&all=true";
             getter("s/" + searchfield.value + append);
         } else {
-            getter(searchfield.value);
+            let append = "";
+            if (tickbox2.checked) append = "&all=true";
+            getter(searchfield.value + append);
         }
     }
 
@@ -210,6 +223,9 @@ let setSearch = (string) => {
 }
 
 let getter = (string) => {
+    history.replaceState(null, null, document.location.pathname + '#search=' + string);
+    setLastVisited(location.hash);
+
     // Check string matching
     let re = /^s\/\:?(\w+)(?:\&all\=(.*))?$/;
     let p = string.match(re);
@@ -217,7 +233,7 @@ let getter = (string) => {
         switch (p[1]) {
             case "all":
                 if (p[2] == null) {
-                        routeAllSeddit();
+                    routeAllSeddit();
                 } else {
                     if (p[2].match(/^true$/)) {
                         routeInfinite();
@@ -239,6 +255,22 @@ let getter = (string) => {
                 break;
         }
         return;
+    }
+
+    // Check if the user wants all subseddit
+    re = /^(\w+)(\&all\=(.*))?$/;
+    p = string.match(re);
+    if (p != null) {
+        if (p[2] == null) {
+            string = p[1];
+        } else {
+            if (p[2].match(/^\&all=true$/)) {
+                getterAll(p[1]);
+                return;
+            } else {
+                string = p[1];
+            }
+        }
     }
 
     // Cleanup all feed child
@@ -316,6 +348,159 @@ let getter = (string) => {
     };
 
     window.addEventListener("scroll", f);
+}
+
+let getterAll = (string) => {
+    // Cleanup all feed child
+    let feed = document.getElementById("feed");
+    while (feed.firstChild) {
+        feed.removeChild(feed.firstChild);
+    }
+
+    let marker = document.getElementById("marker-search");
+    if (marker != null) {
+        marker.innerText = "getting posts...";
+    }
+
+    getPublic()
+        .then(file => file.posts)
+        .then((arr) => {
+            // console.log(arr);
+            let users = [];
+            for (let i = 0; i < arr.length; i++) {
+                users.push(arr[i].meta.author);
+            }
+            return users;
+        })
+        .then((arr) => {
+            let promises = [];
+            for (let i = 0; i < arr.length; i++) {
+                let p = getUserByUsername(arr[i])
+                    .then((res) => {
+                        return res;
+                    })
+                promises.push(p);
+            }
+            Promise.all(promises.map(p => p.catch(() => undefined)))
+                .then((users) => {
+                    let arr = [];
+                    for (let i = 0; i < users.length; i++) {
+
+                        arr.push(users[i].id);
+                    }
+                    return arr;
+                })
+                .then((userids) => {
+                    let empty = [];
+                    getterAllFunc(userids, empty, string);
+                });
+        });
+
+    let getterAllFunc = (followed, done, string) => {
+        let arr_proc = followed;
+        arr_proc.sort((a, b) => b - a);
+        // Make sure that arr_proc is unique
+        let emp = [];
+        for (let i = 0; i < arr_proc.length; i++) {
+            let app = true;
+            for (let j = 0; j < emp.length; j++) {
+                if (emp[j] == arr_proc[i]) app = false;
+            }
+            if (app) emp.push(arr_proc[i]);
+        }
+        arr_proc = emp;
+
+        let arr_done = done;
+
+        let flag = true;
+        let end = false;
+        let lastlen = 0;
+
+        let run = () => {
+            // console.log(arr_proc);
+            // console.log(arr_done);
+            if (!flag) return;
+            if (end) return;
+            flag = false;
+
+            let marker = document.getElementById("marker-search");
+
+            if (marker == null) {
+                end = true;
+                return;
+            }
+
+            let done = () => {
+                if (document.getElementsByClassName("post-list").length == 0) {
+                    marker.innerText = "there doesn't seem to be anything here";
+                } else {
+                    marker.innerText = "You have reached bottom of the page";
+                }
+                end = true;
+                return;
+            }
+
+            let curr = arr_proc.shift();
+            if (curr == null || curr == undefined) {
+                done();
+            }
+
+            getUserById(curr)
+                .then((res) => {
+                    generatePostsOfUser(res.posts, string);
+                    return res.following;
+                })
+                .then((following_arr) => {
+                    arr_done.push(curr);
+                    let f = array_getuniq(following_arr, arr_done);
+                    let r = array_join(arr_proc, f);
+                    arr_proc = r;
+                    flag = true;
+                })
+                .then(() => {
+                    let diff = document.getElementsByClassName("post-list").length - lastlen;
+                    lastlen = document.getElementsByClassName("post-list").length;
+                    if (document.getElementsByClassName("post-list").length < 10 || diff < 1) {
+                        // Keep firing until it's done
+                        run();
+                    }
+                })
+                .catch(() => {
+                    flag = true;
+                });
+        }
+
+        run();
+        let f = () => {
+            let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+            if ((h - 120 < window.scrollY + window.innerHeight)) {
+                run();
+            }
+            let marker = document.getElementById("marker-search");
+            if (marker == null || end) {
+                window.removeEventListener("scroll", f);
+            }
+        };
+
+        window.addEventListener("scroll", f);
+    }
+
+    let generatePostsOfUser = (postsid, string) => {
+        if (postsid == null) return;
+        let feed = document.getElementById("feed");
+        if (feed == null) return;
+
+        for (let i = 0; i < postsid.length; i++) {
+            // console.log("getting post " + postsid[i] + "//"+ i + " of " + postsid.length);
+            getPost(postsid[i])
+                .then((data) => {
+                    if (!simpleSearchEngine(data, string)) return;
+                    if (duplicate(data.id)) return;
+                    let list = setPost(data);
+                    feed.appendChild(list);
+                });
+        }
+    }
 }
 
 let searchPage = (string) => {
