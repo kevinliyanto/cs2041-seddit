@@ -26,8 +26,8 @@ import {
     settingPage
 } from "./components/settings.js";
 import {
-    allSubseddit
-} from "./components/allsubseddit.js";
+    allSeddit
+} from "./components/allSeddit.js";
 import {
     searchPage
 } from "./components/search.js";
@@ -35,6 +35,7 @@ import {
     subsedditPage
 } from "./components/subseddit.js";
 import { infiniteSubseddit } from "./components/infinitewall.js";
+import { allSubsedditPage } from "./components/subseddit_public.js";
 
 // TODO
 
@@ -126,14 +127,25 @@ let routeSettings = () => {
     storeLastVisited();
 }
 
-let routeAllSubseddit = () => {
+let routeAllSeddit = () => {
     if (!checkLogged()) {
         routeLastVisited();
         modal_errors_load("Error", "You are not logged in yet");
         return;
     }
     history.replaceState(null, null, document.location.pathname + '#s/all');
-    allSubseddit();
+    allSeddit();
+    storeLastVisited();
+}
+
+let routeAllSubseddit = (subseddit) => {
+    if (!checkLogged()) {
+        routeLastVisited();
+        modal_errors_load("Error", "You are not logged in yet");
+        return;
+    }
+    history.replaceState(null, null, document.location.pathname + '#s/' + subseddit + '&all=true');
+    allSubsedditPage(subseddit);
     storeLastVisited();
 }
 
@@ -173,7 +185,7 @@ let routeSearch = (string) => {
         if (p != null) {
             switch (p[1]) {
                 case "all":
-                    routeAllSubseddit();
+                    routeAllSeddit();
                     break;
                 default:
                     routeSubseddit(p[1]);
@@ -253,7 +265,7 @@ let routes = () => {
                 routeSubmit();
                 break;
             case '#s/all':
-                routeAllSubseddit();
+                routeAllSeddit();
                 break;
             case '#search':
                 // Added for regex security
@@ -288,6 +300,15 @@ let routes = () => {
                     let re = /^#search\=(.+)$/;
                     let p = location.hash.match(re);
                     routeSearch(p[1]);
+                } else if (checkHashAllSubseddit(location.hash)) {
+                    // JUST REGEX EVERYTHING LOOOOOOOOOOOOL
+                    let re = /^#s\/\:?(\w+)\&all\=(\w*)$/;
+                    let p = location.hash.match(re);
+                    if (p[2].match(/^true$/)) {
+                        routeAllSubseddit(p[1]);
+                    } else {
+                        routeSubseddit(p[1]);
+                    }
                 } else {
                     routeInvalid();
                 }
@@ -330,6 +351,11 @@ let checkHashSubseddit = (hash) => {
     return re.test(hash);
 }
 
+let checkHashAllSubseddit = (hash) => {
+    let re = /^#s\/\:?\w+\&all\=\w*$/;
+    return re.test(hash);
+}
+
 let checkHashFeed = (hash) => {
     let re = /^#feed\=\d+\/?$/;
     return re.test(hash);
@@ -366,7 +392,7 @@ export {
     routeSettings,
     routeSubmit,
     routeSearch,
-    routeAllSubseddit,
+    routeAllSeddit,
     routeSubseddit,
     routeInvalid,
     routeInfinite,

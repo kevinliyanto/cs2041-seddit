@@ -15,7 +15,7 @@ import {
 import {
     array_getuniq,
     array_join
-} from "./allsubseddit.js";
+} from "./allSeddit.js";
 
 let setFeed = () => {
     let feed = document.createElement("ul");

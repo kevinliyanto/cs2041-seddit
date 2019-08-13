@@ -10,7 +10,7 @@ import {
     setPost
 } from "./singlepost.js";
 import {
-    routeSubseddit, routeAllSubseddit
+    routeSubseddit, routeAllSeddit
 } from "../route.js";
 
 
@@ -81,7 +81,7 @@ let setSearchBar = (string) => {
     text.style.fontWeight = "bold";
     let searchfield = document.createElement("input");
     searchfield.className = "submission-search";
-    searchfield.placeholder = "Search for post";
+    searchfield.placeholder = "Search for post/seddit";
     searchfield.value = string;
     div2.appendChild(text);
     div2.appendChild(searchfield);
@@ -198,7 +198,7 @@ let getter = (string) => {
     if (p != null) {
         switch (p[1]) {
             case "all":
-                routeAllSubseddit();
+                routeAllSeddit();
                 break;
             default:
                 routeSubseddit(p[1]);

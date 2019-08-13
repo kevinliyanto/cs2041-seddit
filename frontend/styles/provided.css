@@ -841,6 +841,15 @@ h3 {
   word-wrap: break-word;
 }
 
+.subseddit-title-nobigfont {
+  text-align: center;
+  padding: 6px;
+  border: 2px solid #5cb85c;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  word-wrap: break-word;
+}
+
 .subseddit-welcome {
   text-align: center;
   padding: 6px;

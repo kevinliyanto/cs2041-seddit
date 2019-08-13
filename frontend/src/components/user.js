@@ -324,6 +324,7 @@ let setMainUserId = (id) => {
         .then((res) => {
             generateUser(res);
             setRightPanel(res);
+            history.replaceState(null, null, document.location.pathname + '#u/' + res.username);
         })
         .catch((err) => {
             generateInvalidUsername();
