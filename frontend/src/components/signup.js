@@ -32,7 +32,7 @@ let checkInput = () => {
 
     let email = document.getElementsByName("email");
     if (email[0].value.length < 4) {
-        message += "Invalid email address\n";
+        message += "Invalid email address. Email address should have at least 4 characters.\n";
         valid = false;
     }
 

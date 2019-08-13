@@ -75,11 +75,7 @@ let setMainHome = () => {
     // else generate public post
     if (checkLogged()) {
         rightpanel.appendChild(right_navigation());
-        getUserFeed(0, 10)
-            .then((file) => {
-                generatePosts(file);
-                getter();
-            });
+        getter();
     } else {
         rightpanel.appendChild(welcome());
         getPublic().then(file => {
@@ -123,6 +119,13 @@ let getter = () => {
 
         getUserFeed(r, j)
             .then((file) => {
+                if (file.posts.length == 0) {
+                    marker.innerText = "it's empty right here... check the infinite wall to see public posts and follow users";
+                    marker.style.padding = "30px";
+                    marker.style.fontSize = "16px";
+                    end = true;
+                    return;
+                }
                 generatePosts(file);
                 if (file.posts.length == 0 || file.posts.length < j) {
                     done();
@@ -142,6 +145,7 @@ let getter = () => {
 
     }
 
+    run();
     let f = () => {
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {

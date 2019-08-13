@@ -25,7 +25,8 @@
 13/07/19    15:15   16:23   updated errors on service workers for user experience
 13/07/19    16:23   17:19   updated search to include public subseddit with great matching pattern implementation (I call it monster regex: /^#s\/\:?(\w+)\&all\=(.*)$/)
 13/07/19    17:19   18:03   full search functionality (including public posts to search)
-13/07/19    18:03   18:!5   implementing simple go back to page mechanism button and bit of redesign
+13/07/19    18:03   18:15   implementing simple go back to page mechanism button and bit of redesign
+13/07/19    18:43   19:11   minor fix on css and home so that the user won't be confused
 
 
 End of submission
@@ -64,4 +65,3 @@ Coverage :
     - push notifications : 0% (can't be bothered updating all pages)
     - offline access : 100%? (it's working, but certain hard-refresh behaviour prevents user to access it)
     - fragment routing : 100%
-    
