@@ -10,7 +10,10 @@ import {
     setPost
 } from "./singlepost.js";
 import {
-    routeSubseddit, routeAllSeddit
+    routeSubseddit,
+    routeAllSeddit,
+    routeAllSubseddit,
+    routeInfinite
 } from "../route.js";
 
 
@@ -103,6 +106,16 @@ let setSearchBar = (string) => {
     div3.appendChild(tickbox);
     div3.appendChild(text2);
 
+    let div3b = document.createElement("div");
+    let tickbox2 = document.createElement("input");
+    tickbox2.type = "checkbox";
+    let text3 = document.createElement("a");
+    text3.innerText = "Check public version of subseddit (&all=true)";
+    text3.style.cursor = "default";
+
+    div3b.appendChild(tickbox2);
+    div3b.appendChild(text3);
+
     let div4 = document.createElement("div");
     let submit = document.createElement("button");
     submit.className = "submit-button-2";
@@ -114,7 +127,9 @@ let setSearchBar = (string) => {
         if (key === 13) {
             if (searchfield.value.length == 0) return;
             if (tickbox.checked) {
-                getter("s/" + searchfield.value);
+                let append = "";
+                if (tickbox2.checked) append = "&all=true";
+                getter("s/" + searchfield.value + append);
             } else {
                 getter(searchfield.value);
             }
@@ -124,7 +139,9 @@ let setSearchBar = (string) => {
     submit.onclick = () => {
         if (searchfield.value.length == 0) return;
         if (tickbox.checked) {
-            getter("s/" + searchfield.value);
+            let append = "";
+            if (tickbox2.checked) append = "&all=true";
+            getter("s/" + searchfield.value + append);
         } else {
             getter(searchfield.value);
         }
@@ -132,6 +149,7 @@ let setSearchBar = (string) => {
 
     div.appendChild(div2);
     div.appendChild(div3);
+    div.appendChild(div3b);
     div.appendChild(div4);
 
     return div;
@@ -193,15 +211,31 @@ let setSearch = (string) => {
 
 let getter = (string) => {
     // Check string matching
-    let re = /^\/?s\/\:?(\w+)\/?$/;
+    let re = /^s\/\:?(\w+)(?:\&all\=(.*))?$/;
     let p = string.match(re);
     if (p != null) {
         switch (p[1]) {
             case "all":
-                routeAllSeddit();
+                if (p[2] == null) {
+                        routeAllSeddit();
+                } else {
+                    if (p[2].match(/^true$/)) {
+                        routeInfinite();
+                    } else {
+                        routeAllSeddit();
+                    }
+                }
                 break;
             default:
-                routeSubseddit(p[1]);
+                if (p[2] == null) {
+                    routeSubseddit(p[1]);
+                } else {
+                    if (p[2].match(/^true$/)) {
+                        routeAllSubseddit(p[1]);
+                    } else {
+                        routeSubseddit(p[1]);
+                    }
+                }
                 break;
         }
         return;

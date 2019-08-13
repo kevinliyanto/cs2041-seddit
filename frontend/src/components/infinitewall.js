@@ -48,11 +48,15 @@ let setAll = () => {
 
     main.appendChild(leftpanel);
 
-    let se = document.createElement("div");
-    se.className = "subseddit-title";
-
     // It's/all good man
-    se.innerText = "Whole seddit";
+    let se = document.createElement("div");
+    se.className = "subseddit-title-nobigfont";
+    let det = document.createElement("p");
+    det.innerText = "All Seddit";
+    let p = document.createElement("h3");
+    p.innerText = "Infinite wall";
+    se.appendChild(det);
+    se.appendChild(p);
     rightpanel.appendChild(se);
     rightpanel.appendChild(right_navigation());
     main.appendChild(rightpanel);

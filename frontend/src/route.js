@@ -177,27 +177,8 @@ let routeSearch = (string) => {
         modal_errors_load("Error", "You are not logged in yet");
         return;
     }
-
-    if (string != null && string != "") {
-        // if string has a leading s/ or /s/, it's a subseddit
-        let re = /^\/?s\/\:?(\w+)\/?$/;
-        let p = string.match(re);
-        if (p != null) {
-            switch (p[1]) {
-                case "all":
-                    routeAllSeddit();
-                    break;
-                default:
-                    routeSubseddit(p[1]);
-                    break;
-            }
-            return;
-        }
-        history.replaceState(null, null, document.location.pathname + '#search=' + string);
-    } else {
-        history.replaceState(null, null, document.location.pathname + '#search');
-    }
-
+        
+    history.replaceState(null, null, document.location.pathname + '#search=' + string);
     searchPage(string);
     storeLastVisited();
 }
@@ -302,7 +283,7 @@ let routes = () => {
                     routeSearch(p[1]);
                 } else if (checkHashAllSubseddit(location.hash)) {
                     // JUST REGEX EVERYTHING LOOOOOOOOOOOOL
-                    let re = /^#s\/\:?(\w+)\&all\=(\w*)$/;
+                    let re = /^#s\/\:?(\w+)\&all\=(.*)$/;
                     let p = location.hash.match(re);
                     if (p[2].match(/^true$/)) {
                         routeAllSubseddit(p[1]);
@@ -393,6 +374,7 @@ export {
     routeSubmit,
     routeSearch,
     routeAllSeddit,
+    routeAllSubseddit,
     routeSubseddit,
     routeInvalid,
     routeInfinite,

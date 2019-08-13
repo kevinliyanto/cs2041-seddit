@@ -15,6 +15,7 @@ import {
     array_getuniq,
     array_join
 } from "./allSeddit.js";
+import { routeInfinite } from "../route.js";
 
 let setFeed = () => {
     let feed = document.createElement("ul");
@@ -209,6 +210,11 @@ let generatePostsOfUser = (postsid, subseddit) => {
 }
 
 let allSubsedditPage = (subseddit) => {
+    if (subseddit.match(/^all$/)) {
+        routeInfinite();
+        return;
+    }
+
     setNavbar();
     setSubseddit(subseddit);
     setBackButton();
