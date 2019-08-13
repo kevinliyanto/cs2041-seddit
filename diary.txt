@@ -26,3 +26,42 @@
 13/07/19    16:23   17:19   updated search to include public subseddit with great matching pattern implementation (I call it monster regex: /^#s\/\:?(\w+)\&all\=(.*)$/)
 13/07/19    17:19   18:03   full search functionality (including public posts to search)
 13/07/19    18:03   18:!5   implementing simple go back to page mechanism button and bit of redesign
+
+
+End of submission
+
+Coverage :
+
+- Autotest : not 100% because the autotest is weird and search implementation is only avaialble for logged in users. Other autotest seems to be not working properly even if implemented but no one knows. 
+
+- Milestone 0 : 100%
+
+- Milestone 1 :
+    - login : 100%
+    - signup / registration : 100%
+    - feed interface for public and private : 100%
+
+- Milestone 2 : 
+    - show upvotes : 100%
+    - show comments : 100%
+    - upvote/deletevote content : 100%
+    - post new content : 100%
+    - pagination : 0% (see L3/Infinite Scroll)
+    - profile : 100% (subset of L3/User Pages)
+
+- Milestone 3:
+    - infinite scroll : 100% (on all new-post-fetching pages)
+    - put comments : 100%
+    - live update : 100%
+    - update profile : 100%
+    - user pages : 100%
+    - delete/update(edit) post : 100%
+    - search functionality : 400% (search normal / followed users, search normal subseddit, search public post, search public subseddit)
+
+- Milestone 4:
+    - multiple subseddits : 200% (followed users subseddit, public subseddit)
+    - slick UI : subjective
+    - push notifications : 0% (can't be bothered updating all pages)
+    - offline access : 100%? (it's working, but certain hard-refresh behaviour prevents user to access it)
+    - fragment routing : 100%
+    

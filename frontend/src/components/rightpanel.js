@@ -25,12 +25,13 @@ let right_navigation = () => {
     title.style.marginBottom = "6px";
     all.appendChild(title);
 
-    let s = checkLogged();
+    let search = document.createElement("input");
+    search.placeholder = "Quick search";
+    search.className = "nav-search";
+    all.appendChild(search);
 
+    let s = checkLogged();
     if (s) {
-        let search = document.createElement("input");
-        search.placeholder = "Quick search";
-        search.className = "nav-search";
         search.addEventListener('keypress', event => {
             let key = event.keyCode;
             if (key === 13) {
@@ -38,7 +39,6 @@ let right_navigation = () => {
                     routeSearch(search.value);
             }
         });
-        all.appendChild(search);
     }
     
     let button_home = document.createElement("button");

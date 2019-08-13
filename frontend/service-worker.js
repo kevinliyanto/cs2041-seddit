@@ -19,6 +19,9 @@ self.addEventListener('activate', event => {
     console.log('Activating service worker');
 });
 
+
+// Code was taken from https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker
+// About service worker listener
 self.addEventListener('fetch', function (event) {
     if (event.request.method !== "GET") return;
     event.respondWith(
