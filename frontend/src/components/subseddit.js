@@ -135,7 +135,6 @@ let getter = (subseddit) => {
     
     run();
     let f = () => {
-        console.log(run);
         let h = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         if ((h - 120 < window.scrollY + window.innerHeight)) {
             run();

@@ -909,3 +909,7 @@ label {
   border-radius: 5px;
   padding: 6px 12px;
 }
+
+#modal_body_text_smaller {
+  font-size: 12px;
+}
