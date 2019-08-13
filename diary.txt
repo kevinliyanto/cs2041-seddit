@@ -27,6 +27,7 @@
 13/07/19    17:19   18:03   full search functionality (including public posts to search)
 13/07/19    18:03   18:15   implementing simple go back to page mechanism button and bit of redesign
 13/07/19    18:43   19:11   minor fix on css and home so that the user won't be confused
+13/07/19    19:11   19:22   minor fix on user page interactivity
 
 
 End of submission

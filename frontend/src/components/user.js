@@ -62,6 +62,7 @@ let setRightUserPanel = (res) => {
     let following_bottom = document.createElement("div");
     following_bottom.className = "user-numeric-bottom";
     following_bottom.innerText = res.following.length;
+    following_bottom.id = "user_following";
     following.appendChild(following_top);
     following.appendChild(following_bottom);
 
@@ -74,6 +75,7 @@ let setRightUserPanel = (res) => {
     let followers_bottom = document.createElement("div");
     followers_bottom.className = "user-numeric-bottom";
     followers_bottom.innerText = res.followed_num;
+    followers_bottom.id = "user_followers";
     followers.appendChild(followers_top);
     followers.appendChild(followers_bottom);
 
@@ -145,6 +147,9 @@ let followButton = (res) => {
                                     .then(() => {
                                         follow.classList.toggle("follow-button-active");
                                         follow.innerText = "Follow user";
+                                        let followers = document.getElementById("user_followers");
+                                        let n = Number(followers.innerText) - 1;
+                                        followers.innerText = n;
                                     })
                                     .catch((err) => {
                                         modalError_Unfollow(err);
@@ -154,6 +159,9 @@ let followButton = (res) => {
                                     .then(() => {
                                         follow.classList.toggle("follow-button-active");
                                         follow.innerText = "Unfollow user";
+                                        let followers = document.getElementById("user_followers");
+                                        let n = Number(followers.innerText) + 1;
+                                        followers.innerText = n;
                                     })
                                     .catch((err) => {
                                         modalError_Follow(err);
