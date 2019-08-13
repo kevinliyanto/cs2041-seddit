@@ -22,3 +22,4 @@
 13/07/19    01:49   03:41   heavy modification on UI for convenience, and then dedicated page for search and its functionality.
 13/07/19    03:55   06:52   trying to implement the service worker but can't do anything. piazza said that we need to implement subseddits from /user/feed. MY HARD WORK ON MULTIPLE PUBLIC SUBSEDDITS IS WASTED!!!!ASDFGHJKL!@#$%^&. i put the all subseddit in infinitewall, because i don't want my hard work to be wasted like that...
 13/07/19    13:21   15:11   service worker, it works (AT LAST!). user can now go offline and still be able to do stuff for any get requests.
+13/07/19    15:15   16:23   updated errors on service workers for user experience

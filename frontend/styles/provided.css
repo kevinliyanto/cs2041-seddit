@@ -400,6 +400,10 @@ h3 {
   font-weight: 100;
 }
 
+.upvotes-user-offline {
+  font-weight: 100;
+}
+
 .upvotes-user:hover {
   text-decoration: underline;
   cursor: pointer;

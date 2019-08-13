@@ -18,7 +18,8 @@ import {
 import {
     modal_upvotecount_load,
     modalError_Unfollow,
-    modalError_Follow
+    modalError_Follow,
+    modalError_GetUser
 } from "./modal.js";
 import {
     routeSettings
@@ -145,8 +146,8 @@ let followButton = (res) => {
                                         follow.classList.toggle("follow-button-active");
                                         follow.innerText = "Follow user";
                                     })
-                                    .catch(() => {
-                                        modalError_Unfollow();
+                                    .catch((err) => {
+                                        modalError_Unfollow(err);
                                     });
                             } else {
                                 putFollow(res.username)
@@ -154,8 +155,8 @@ let followButton = (res) => {
                                         follow.classList.toggle("follow-button-active");
                                         follow.innerText = "Unfollow user";
                                     })
-                                    .catch(() => {
-                                        modalError_Follow();
+                                    .catch((err) => {
+                                        modalError_Follow(err);
                                     });
                             }
                         });

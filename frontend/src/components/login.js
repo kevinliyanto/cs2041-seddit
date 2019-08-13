@@ -54,7 +54,12 @@ let submit = () => {
                 routeHome();
             })
             .catch((err) => {
-                modalError_Login();
+                if (err == 403) {
+                    err = "Wrong username or password";
+                } else if (err == 400) {
+                    err = "Invalid username or password";
+                }
+                modalError_Login(err);
             });
     }
 }

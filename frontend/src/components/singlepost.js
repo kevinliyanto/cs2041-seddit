@@ -11,7 +11,8 @@ import {
     modalError_Upvote,
     modalError_GetUser,
     modalError_RestrictionVote,
-    modalError_DeletePost
+    modalError_DeletePost,
+    modalError_Vote
 } from "./modal.js";
 import {
     routeUser,
@@ -54,7 +55,7 @@ let upvoteButton = (data) => {
                 }
 
                 button.onclick = () => {
-                    checkUpvote(data.id, id)
+                    checkUpvote(data, id)
                         .then((upvoted) => {
                             if (upvoted) {
                                 deleteVote(data.id)
@@ -81,7 +82,7 @@ let upvoteButton = (data) => {
                             }
                         })
                         .catch(() => {
-                            modalError_GetPost();
+                            modalError_Vote();
                         });
                 }
             })
@@ -97,11 +98,11 @@ let upvoteButton = (data) => {
     return button;
 }
 
-async function checkUpvote(dataid, userid) {
-    return getPost(dataid)
-        .then((data) => {
-            for (let i = 0; i < data.meta.upvotes.length; i++) {
-                if (data.meta.upvotes[i] == userid) {
+async function checkUpvote(data, userid) {
+    return getPost(data.id)
+        .then((retrieved) => {
+            for (let i = 0; i < retrieved.meta.upvotes.length; i++) {
+                if (retrieved.meta.upvotes[i] == userid) {
                     return true;
                 }
             }
@@ -131,7 +132,10 @@ let upvoteCount = (data) => {
                     modal_upvotecount_load("Upvotes", s, checkpost.meta.upvotes);
                 })
                 .catch(() => {
-                    modalError_GetPost();
+                    let s = "Upvoted by:";
+                    votecount.innerText = data.meta.upvotes.length;
+                    if (data.meta.upvotes.length == 0) s = "Post has no upvote";
+                    modal_upvotecount_load("Upvotes", s, data.meta.upvotes);
                 });
         };
     }
@@ -279,7 +283,9 @@ let rightColumn = (data) => {
                     modal_comments_load("Comments", checkpost);
                 })
                 .catch(() => {
+                    // Use cached materials instead
                     modalError_GetPost();
+                    modal_comments_load("Comments", data);
                 });
         };
 

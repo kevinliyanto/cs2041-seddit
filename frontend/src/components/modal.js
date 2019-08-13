@@ -25,9 +25,13 @@ let modal_errors = () => {
     let modal_body_text = document.createElement("p");
     modal_body_text.id = "modal_body_text";
 
+    let modal_body_text_smaller = document.createElement("p");
+    modal_body_text_smaller.id = "modal_body_text_smaller";
+
     modal_header.appendChild(close_button);
     modal_header.appendChild(modal_header_text);
     modal_body.appendChild(modal_body_text);
+    modal_body.appendChild(modal_body_text_smaller);
 
     content.appendChild(modal_header);
     content.appendChild(modal_body);
@@ -35,7 +39,7 @@ let modal_errors = () => {
     return content;
 }
 
-let modal_errors_load = (header, text) => {
+let modal_errors_load = (header, text, err) => {
     let modal_header_text = document.getElementById("modal_header_text");
     let modal_body_text = document.getElementById("modal_body_text");
 
@@ -45,6 +49,12 @@ let modal_errors_load = (header, text) => {
 
     modal_header_text.innerText = header;
     modal_body_text.innerText = text;
+
+    if (err != null) {
+        modal_body_text_smaller.innerText = err;
+    } else {
+        modal_body_text_smaller.innerText = "";
+    }
 
     // show modal
     let modal = document.getElementById("modal_1");
@@ -191,6 +201,10 @@ let modal_upvotecount_load = (header, cont, arrayofuserid) => {
             })
             .catch(() => {
                 modalError_GetUser();
+                let word = document.createElement("a");
+                word.innerText = "userID: " + userid;
+                word.className = "upvotes-user-offline";
+                list.appendChild(word);
             });
 
         modal_body_text.appendChild(list);
@@ -306,8 +320,8 @@ let modal_comments_load = (header, data) => {
                             modalError_GetPost();
                         });
                 })
-                .catch(() => {
-                    modalError_Comment();
+                .catch((err) => {
+                    modalError_Comment(err);
                 })
         } else {
             modalError_RestrictionComment();
@@ -390,24 +404,28 @@ let modalError_Downvote = () => {
     modal_errors_load("Error", "Can't remove upvote from the post");
 }
 
-let modalError_Comment = () => {
-    modal_errors_load("Error", "Can't put comment");
+let modalError_Vote = () => {
+    modal_errors_load("Error", "Can't vote the post");
 }
 
-let modalError_Login = () => {
-    modal_errors_load("Error", "Wrong username or password");
+let modalError_Comment = (err) => {
+    modal_errors_load("Error", "Can't put comment", err);
 }
 
-let modalError_Signup = () => {
-    modal_errors_load("Error", "Username is already taken");
+let modalError_Login = (err) => {
+    modal_errors_load("Error", "Can't login", err);
 }
 
-let modalError_Follow = () => {
-    modal_errors_load("Error", "Can't follow user");
+let modalError_Signup = (err) => {
+    modal_errors_load("Error", "Can't sign up", err);
 }
 
-let modalError_Unfollow = () => {
-    modal_errors_load("Error", "Can't unfollow user");
+let modalError_Follow = (err) => {
+    modal_errors_load("Error", "Can't follow user", err);
+}
+
+let modalError_Unfollow = (err) => {
+    modal_errors_load("Error", "Can't unfollow user", err);
 }
 
 let modalError_GetPost = () => {
@@ -435,7 +453,7 @@ let modalError_RestrictionComment = () => {
 }
 
 let modalError_GetUser = () =>{
-    modal_errors_load("Error", "Error on getting user details. Try refreshing this page.");
+    modal_errors_load("Error", "Error on getting user details. Loaded information might be invalid. Try refreshing this page or check your internet connection.");
 }
 
 let modalError_SetUser = () =>{
@@ -470,6 +488,7 @@ export {
     modalError_Signup,
     modalError_Unfollow,
     modalError_Upvote,
+    modalError_Vote,
     modalError_RestrictionSetPost,
     modalError_GetUser,
     modalError_Downvote,

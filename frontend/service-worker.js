@@ -20,6 +20,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', function (event) {
+    if (event.request.method !== "GET") return;
     event.respondWith(
         caches.open('mysite-dynamic').then(function (cache) {
             return cache.match(event.request).then(function (response) {

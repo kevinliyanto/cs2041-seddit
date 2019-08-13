@@ -9,14 +9,14 @@ import {
 } from "../localstorage.js";
 import {
     modal_upvotecount_load,
-    modal_comments_load,
     modalError_GetPost,
     modalError_GetUser,
     modalError_Downvote,
     modalError_Upvote,
     modalError_DeletePost,
     modalError_Comment,
-    modalError_RestrictionComment
+    modalError_RestrictionComment,
+    modalError_Vote
 } from "./modal.js";
 import {
     routeUser,
@@ -68,7 +68,10 @@ let setVote = (data) => {
                 modal_upvotecount_load("Upvotes", s, checkpost.meta.upvotes);
             })
             .catch(() => {
-                modalError_GetPost();
+                let s = "Upvoted by:";
+                votecount.innerText = data.meta.upvotes.length;
+                if (data.meta.upvotes.length == 0) s = "Post has no upvote";
+                modal_upvotecount_load("Upvotes", s, data.meta.upvotes);
             });
     };
 
@@ -81,7 +84,7 @@ let setVote = (data) => {
             }
 
             button.onclick = () => {
-                checkUpvote(data.id, id)
+                checkUpvote(data, id)
                     .then((upvoted) => {
                         if (upvoted) {
                             deleteVote(data.id)
@@ -106,7 +109,7 @@ let setVote = (data) => {
                         }
                     })
                     .catch(() => {
-                        modalError_GetPost();
+                        modalError_Vote();
                     });
             }
         })
@@ -327,8 +330,8 @@ let setCommentbox = (data) => {
                             modalError_GetPost();
                         });
                 })
-                .catch(() => {
-                    modalError_Comment();
+                .catch((err) => {
+                    modalError_Comment(err);
                 })
         } else {
             modalError_RestrictionComment();

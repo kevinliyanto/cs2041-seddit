@@ -208,7 +208,12 @@ let submit = () => {
                 modal_success_load("Success", "Successfully registered as " + username);
             })
             .catch((err) => {
-                modalError_Signup();
+                if (err == 403) {
+                    err = "Username is already taken";
+                } else if (err == 400) {
+                    err = "Invalid input";
+                }
+                modalError_Signup(err);
             });
     }
 }
