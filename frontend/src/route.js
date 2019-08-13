@@ -11,7 +11,8 @@ import {
 import {
     checkLogged,
     getLastVisited,
-    setLastVisited
+    setLastVisited,
+    getPreviousVisited
 } from "./localstorage.js";
 import {
     expandedPost
@@ -303,6 +304,11 @@ let storeLastVisited = () => {
     setLastVisited(location.hash);
 }
 
+let routePrevious = () => {
+    history.replaceState(null, null, document.location.pathname + getPreviousVisited());
+    routes();
+}
+
 let routeLastVisited = () => {
     history.replaceState(null, null, document.location.pathname + getLastVisited());
     routes();
@@ -380,5 +386,7 @@ export {
     routeInfinite,
     refresh,
     routeLastVisited,
+    storeLastVisited,
+    routePrevious,
     firstRoute
 };

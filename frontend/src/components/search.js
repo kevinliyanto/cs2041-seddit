@@ -17,13 +17,13 @@ import {
     routeSubseddit,
     routeAllSeddit,
     routeAllSubseddit,
-    routeInfinite
+    routeInfinite,
+    storeLastVisited
 } from "../route.js";
 import {
     array_getuniq,
     array_join
 } from "./allSeddit.js";
-import { setLastVisited } from "../localstorage.js";
 
 // Just regex everything loool
 let simpleSearchEngine = (file, string) => {
@@ -224,7 +224,7 @@ let setSearch = (string) => {
 
 let getter = (string) => {
     history.replaceState(null, null, document.location.pathname + '#search=' + string);
-    setLastVisited(location.hash);
+    storeLastVisited();
 
     // Check string matching
     let re = /^s\/\:?(\w+)(?:\&all\=(.*))?$/;

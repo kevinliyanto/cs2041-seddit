@@ -776,6 +776,11 @@ h3 {
   color: rgb(0, 0, 0);
 }
 
+.nav-button-3 {
+  border-color: #489738;
+  background-color: #489738;
+}
+
 .nav-search {
   background-color: #2979a750;
   font: inherit;

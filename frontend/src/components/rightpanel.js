@@ -11,7 +11,8 @@ import {
     routeSettings,
     refresh,
     routeSearch,
-    routeInfinite
+    routeInfinite,
+    routePrevious
 } from "../route.js";
 
 let right_navigation = () => {
@@ -24,6 +25,22 @@ let right_navigation = () => {
     title.style.marginBottom = "6px";
     all.appendChild(title);
 
+    let s = checkLogged();
+
+    if (s) {
+        let search = document.createElement("input");
+        search.placeholder = "Quick search";
+        search.className = "nav-search";
+        search.addEventListener('keypress', event => {
+            let key = event.keyCode;
+            if (key === 13) {
+                if (search.value.length != 0)
+                    routeSearch(search.value);
+            }
+        });
+        all.appendChild(search);
+    }
+    
     let button_home = document.createElement("button");
     button_home.className = "nav-button";
     button_home.innerText = "Home";
@@ -32,7 +49,7 @@ let right_navigation = () => {
     }
     all.appendChild(button_home);
 
-    if (checkLogged()) {
+    if (s) {
         let button_search = document.createElement("button");
         button_search.className = "nav-button";
         button_search.innerText = "Search";
@@ -55,14 +72,14 @@ let right_navigation = () => {
         }
 
         let button_user = document.createElement("button");
-        button_user.className = "nav-button nav-button-2";
+        button_user.className = "nav-button nav-button-3";
         button_user.innerText = "Profile";
         button_user.onclick = () => {
             routeUser(getUsername());
         }
 
         let button_setting = document.createElement("button");
-        button_setting.className = "nav-button nav-button-2";
+        button_setting.className = "nav-button nav-button-3";
         button_setting.innerText = "User Setting";
         button_setting.onclick = () => {
             routeSettings();
@@ -74,18 +91,14 @@ let right_navigation = () => {
         all.appendChild(button_user);
         all.appendChild(button_setting);
 
-        let search = document.createElement("input");
-        search.placeholder = "Quick search";
-        search.className = "nav-search";
-        search.addEventListener('keypress', event => {
-            let key = event.keyCode;
-            if (key === 13) {
-                if (search.value.length != 0)
-                    routeSearch(search.value);
-            }
-        });
+        let button_back = document.createElement("button");
+        button_back.className = "nav-button nav-button-2";
+        button_back.innerText = "Go back";
+        button_back.onclick = () => {
+            routePrevious();
+        }
+        all.appendChild(button_back);
 
-        all.appendChild(search);
     } else {
         let login = document.createElement("button");
         login.className = "nav-button button-primary";

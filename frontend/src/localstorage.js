@@ -64,7 +64,19 @@ function checkLogged() {
 }
 
 function setLastVisited(hash) {
+    let last = localStorage.getItem('lastVisited');
+    if (last != null) {
+        localStorage.setItem('previousVisited', last);
+    }
     localStorage.setItem('lastVisited', hash);
+}
+
+function getPreviousVisited() {
+    let prev = localStorage.getItem('previousVisited');
+    if (prev == null) {
+        return "";
+    }
+    return prev;
 }
 
 function getLastVisited() {
@@ -91,6 +103,7 @@ export {
     getToken,
     checkLogged,
     setLastVisited,
+    getPreviousVisited,
     getLastVisited,
     clearCreds
 };
