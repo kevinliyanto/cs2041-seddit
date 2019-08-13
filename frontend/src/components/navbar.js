@@ -58,17 +58,12 @@ let generateNavlistPub = () => {
     rightlist.classList.add("nav");
     rightlist.id = "navlist-pub";
 
-    let list_0 = document.createElement("li");
-    list_0.className = "nav-item";
     let list_1 = document.createElement("li");
     list_1.className = "nav-item";
     let list_2 = document.createElement("li");
     list_2.className = "nav-item";
     let list_3 = document.createElement("li");
     list_3.className = "nav-item";
-
-    let search = searchBar();
-    list_0.appendChild(search);
 
     let home = homeButton();
     home.onclick = () => {
@@ -88,7 +83,6 @@ let generateNavlistPub = () => {
     }
     list_3.appendChild(signup);
 
-    rightlist.appendChild(list_0);
     rightlist.appendChild(list_1);
     rightlist.appendChild(list_2);
     rightlist.appendChild(list_3);
@@ -122,7 +116,6 @@ let generateNavlistPrivate = () => {
     list_2.className = "nav-item";
 
     let search = searchBar();
-    list_0.appendChild(search);
     search.addEventListener('keypress', event => {
         let key = event.keyCode;
         if (key === 13) {
@@ -132,6 +125,7 @@ let generateNavlistPrivate = () => {
             event.currentTarget.value = "";
         }
     });
+    list_0.appendChild(search);
 
     let a1 = document.createElement("a");
     a1.innerText = "Logged in as ";
