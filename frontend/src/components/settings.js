@@ -19,6 +19,7 @@ let submitButton = () => {
     let submit = document.createElement("button");
     submit.className = "submit-button";
     submit.innerText = "Submit";
+    submit.setAttribute("clicked", "false");
 
     return submit;
 }
@@ -60,14 +61,64 @@ let form = () => {
     changeForm.appendChild(document.createElement("br"));
 
     // Create button
+    let div = document.createElement("div");
+    div.className = "submission";
+    div.style.margin = 0;
     let submit = submitButton();
-    submit.onclick = () => {
-        submitForm();
-    };
+    let confirm = submitButton();
+    confirm.style.display = "none";
+    confirm.innerText = "Confirm submmission";
+    confirm.className = "submit-button-2";
 
-    changeForm.appendChild(submit);
+    submit.onclick = () => {
+        if (submit.getAttribute("clicked") == "false") {
+            if(!checkForm()) {
+                modal_errors_load("Invalid submission", "You can't submit nothing");
+                return;
+            }
+            submit.classList.toggle("submit-button-rev");
+            submit.setAttribute("clicked", "true");
+            submit.innerText = "Cancel";
+            confirm.style.display = "block";
+        } else {
+            submit.classList.toggle("submit-button-rev");
+            submit.setAttribute("clicked", "false");
+            submit.innerText = "Submit";
+            confirm.style.display = "none";
+        }
+    };
+    
+    confirm.onclick = () => {
+        submitForm();
+    }
+
+    div.appendChild(submit);
+    div.appendChild(confirm);
+    changeForm.appendChild(div);
 
     return changeForm;
+}
+
+let checkForm = () => {
+    let name = document.getElementById("name");
+    let password = document.getElementById("password");
+    let email = document.getElementById("email");
+
+    let payload = {};
+    if (name.value != "") {
+        payload.name = name.value;
+    }
+    if (password.value != "") {
+        payload.password = password.value;
+    }
+    if (email.value != "") {
+        payload.email = email.value;
+    }
+    
+    if (Object.keys(payload).length == 0) {
+        return false;
+    }
+    return true;
 }
 
 let submitForm = () => {
@@ -86,14 +137,11 @@ let submitForm = () => {
     if (email.value != "") {
         payload.email = email.value;
     }
-
-    console.log(payload);
     
     if (Object.keys(payload).length == 0) {
         modal_errors_load("Invalid submission", "You can't submit nothing");
         return;
     }
-
 
     putUser(payload)
         .then(() => {

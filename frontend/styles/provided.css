@@ -232,6 +232,11 @@ h3 {
   color: #ffffff;
 }
 
+.submit-button-rev {
+  background-color: #eee8e8;
+  color: #FF5700;
+}
+
 .loggedinas {
   background-color: var(--reddit-bg-color);
   font: inherit;
